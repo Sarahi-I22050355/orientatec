@@ -1,0 +1,18 @@
+# Python
+ia/venv/
+ia/__pycache__/
+ia/.env
+*.pyc
+
+# Node
+backend/node_modules/
+backend/.env
+
+# React
+frontend/node_modules/
+frontend/.env
+frontend/build/
+
+# General
+.DS_Store
+*.log
