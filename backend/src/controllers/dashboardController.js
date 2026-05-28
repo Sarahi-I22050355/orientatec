@@ -1,22 +1,30 @@
 const { obtenerEstadisticas } = require('../models/Aspirante');
 const Conversacion = require('../models/Conversacion');
+const mongoose = require('mongoose');
 
 const getEstadisticas = async (req, res) => {
-    try {
-        const [estadisticas, totalChats] = await Promise.all([
-            obtenerEstadisticas(),
-            Conversacion.countDocuments()
-        ]);
+    let carreras = [];
+    let totalChats = 0;
 
-        res.json({
-            carreras: estadisticas,
-            total_chats: totalChats,
-            actualizado: new Date()
-        });
-    } catch (err) {
-        console.error('Error dashboard:', err.message);
-        res.status(500).json({ error: 'Error al obtener estadísticas' });
+    try {
+        carreras = await obtenerEstadisticas();
+    } catch (pgErr) {
+        console.warn('PostgreSQL no disponible:', pgErr.message);
     }
+
+    try {
+        if (mongoose.connection.readyState === 1) {
+            totalChats = await Conversacion.countDocuments();
+        }
+    } catch (mongoErr) {
+        console.warn('MongoDB no disponible:', mongoErr.message);
+    }
+
+    res.json({
+        carreras,
+        total_chats: totalChats,
+        actualizado: new Date()
+    });
 };
 
 module.exports = { getEstadisticas };

@@ -19,7 +19,7 @@ function Dashboard() {
 
   useEffect(() => {
     cargar();
-    const intervalo = setInterval(cargar, 30000); // actualiza cada 30s
+    const intervalo = setInterval(cargar, 30000);
     return () => clearInterval(intervalo);
   }, []);
 
@@ -29,11 +29,11 @@ function Dashboard() {
 
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-blue-900">📈 Dashboard</h1>
+            <h1 className="text-3xl font-bold text-blue-900">📈 DataPulse</h1>
             <p className="text-gray-500">Panel de administración — Departamento de Difusión ITSM</p>
           </div>
           <button onClick={cargar}
-            className="bg-blue-700 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-800">
+            className="bg-blue-900 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-950">
             🔄 Actualizar
           </button>
         </div>
@@ -44,10 +44,9 @@ function Dashboard() {
 
         {!cargando && datos && (
           <>
-            {/* Tarjetas resumen */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
               <div className="bg-white rounded-2xl shadow p-6 text-center">
-                <p className="text-4xl font-bold text-blue-700">
+                <p className="text-4xl font-bold text-blue-900">
                   {datos.carreras.reduce((acc, c) => acc + Number(c.total), 0)}
                 </p>
                 <p className="text-gray-500 mt-1">Tests completados</p>
@@ -57,18 +56,15 @@ function Dashboard() {
                 <p className="text-gray-500 mt-1">Conversaciones de chat</p>
               </div>
               <div className="bg-white rounded-2xl shadow p-6 text-center">
-                <p className="text-4xl font-bold text-purple-600">
+                <p className="text-4xl font-bold text-blue-700" style={{fontSize: '1.25rem'}}>
                   {datos.carreras.length > 0 ? datos.carreras[0].carrera : '—'}
                 </p>
                 <p className="text-gray-500 mt-1">Carrera más solicitada</p>
               </div>
             </div>
 
-            {/* Tabla de carreras */}
             <div className="bg-white rounded-2xl shadow p-6 mb-6">
-              <h2 className="font-bold text-lg text-blue-900 mb-4">
-                🎓 Interés por carrera
-              </h2>
+              <h2 className="font-bold text-lg text-blue-900 mb-4">🎓 Interés por carrera</h2>
               {datos.carreras.length === 0 ? (
                 <p className="text-gray-400 text-center py-8">
                   Aún no hay datos. Los resultados aparecerán cuando los aspirantes completen el test.
@@ -87,7 +83,7 @@ function Dashboard() {
                           </span>
                         </div>
                         <div className="w-full bg-gray-100 rounded-full h-3">
-                          <div className="bg-blue-600 h-3 rounded-full transition-all"
+                          <div className="bg-blue-700 h-3 rounded-full transition-all"
                             style={{ width: `${pct}%` }} />
                         </div>
                       </div>
@@ -97,11 +93,8 @@ function Dashboard() {
               )}
             </div>
 
-            {/* Municipios */}
             <div className="bg-white rounded-2xl shadow p-6">
-              <h2 className="font-bold text-lg text-blue-900 mb-4">
-                📍 Distribución por municipio
-              </h2>
+              <h2 className="font-bold text-lg text-blue-900 mb-4">📍 Distribución por municipio</h2>
               {datos.carreras.length === 0 ? (
                 <p className="text-gray-400 text-center py-8">Sin datos aún.</p>
               ) : (
