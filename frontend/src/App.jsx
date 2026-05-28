@@ -7,19 +7,23 @@ import Dashboard from './pages/Dashboard';
 function App() {
   return (
     <BrowserRouter>
-      <nav className="bg-blue-800 text-white px-6 py-4 flex gap-6 items-center">
-        <span className="font-bold text-xl mr-4">🎓 OrientaTec</span>
-        <Link to="/" className="hover:text-blue-200">Inicio</Link>
-        <Link to="/chat" className="hover:text-blue-200">Chatbot</Link>
-        <Link to="/test" className="hover:text-blue-200">Test Vocacional</Link>
-        <Link to="/dashboard" className="hover:text-blue-200 ml-auto">Dashboard</Link>
+      <nav className="bg-blue-950 text-white px-4 py-3 border-b border-blue-800">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <img src="/logo_tecnm.png" alt="TecNM Campus Monclova" className="h-8 object-contain" />
+          <Link to="/" className="hover:text-blue-300 text-sm">Inicio</Link>
+          <Link to="/chat" className="hover:text-blue-300 text-sm">Chatbot</Link>
+          <Link to="/test" className="hover:text-blue-300 text-sm">Test Vocacional</Link>
+          <Link to="/dashboard" className="hover:text-blue-300 text-sm">DataPulse</Link>
+        </div>
       </nav>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/chat" element={<Chat />} />
-        <Route path="/test" element={<TestVocacional />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-      </Routes>
+      <div className="overflow-x-hidden">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/chat" element={<Chat />} />
+          <Route path="/test" element={<TestVocacional />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Routes>
+      </div>
     </BrowserRouter>
   );
 }
