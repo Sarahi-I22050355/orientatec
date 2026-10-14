@@ -1,4 +1,4 @@
-from langchain_groq import ChatGroq
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from dotenv import load_dotenv
 import os
@@ -96,10 +96,10 @@ Público: CFE, IMSS, ISSSTE, Presidencia Municipal de Monclova y Frontera, SEP C
 9. Responde siempre en español de forma amigable y cercana.
 """
 def get_llm():
-    return ChatGroq(
-        model=os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile"),
+    return ChatGoogleGenerativeAI(
+        model="gemini-3.8-flash",
         temperature=0.7,
-        api_key=os.getenv("GROQ_API_KEY")
+        google_api_key=os.getenv("AQ.Ab8RN6IdGbRHj3Aj0dGc6dkGVJyeTVVJquas4KT047yAjd6xGg")
     )
 
 def chat_con_orientatec(mensaje: str, historial: list[dict]) -> dict:
@@ -116,10 +116,11 @@ def chat_con_orientatec(mensaje: str, historial: list[dict]) -> dict:
     mensajes.append(HumanMessage(content=mensaje))
 
     respuesta = llm.invoke(mensajes)
-    perfil = detectar_inclinacion(mensaje + " " + respuesta.content)
+    texto_respuesta = respuesta.content if isinstance(respuesta.content, str) else respuesta.content[0].get("text", "")
+    perfil = detectar_inclinacion(mensaje + " " + texto_respuesta)
 
     return {
-        "respuesta": respuesta.content,
+        "respuesta": respuesta.content if isinstance(respuesta.content, str) else respuesta.content[0].get("text", ""),
         "perfil_detectado": perfil
     }
 
