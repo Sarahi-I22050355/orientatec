@@ -4,7 +4,7 @@ from typing import Optional
 # ─── ENTRADA DEL ASPIRANTE ───────────────────────────────────────────────────
 
 class PerfilAspirante(BaseModel):
-    nombre: str
+    nombre: str = 'Anónimo'
     bachillerato_origen: str  # CBTis, COBAC, Privado, etc.
     municipio: str
     materias_favoritas: list[str]

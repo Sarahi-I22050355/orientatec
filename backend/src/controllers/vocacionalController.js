@@ -12,7 +12,7 @@ const matchVocacional = async (req, res) => {
 
         // Guardar resultado en PostgreSQL
         await guardarAspirante({
-            nombre: req.body.nombre,
+            nombre: req.body.nombre || 'Anónimo',
             bachillerato: req.body.bachillerato_origen,
             municipio: req.body.municipio,
             perfil_detectado: data.perfil_detectado,

@@ -73,7 +73,7 @@ const COLORES_SECTOR = {
 function TestVocacional() {
   const [paso, setPaso] = useState(1);
   const [form, setForm] = useState({
-    nombre: '', bachillerato_origen: '', municipio: '',
+    bachillerato_origen: '', municipio: '',
     materias_favoritas: [], pasatiempos: [],
     habilidad_logica: 50, habilidad_diseno: 50,
     habilidad_liderazgo: 50, habilidad_manual: 50,
@@ -129,8 +129,6 @@ function TestVocacional() {
         {paso === 1 && (
           <div className="bg-white rounded-2xl shadow p-6 space-y-4">
             <h2 className="font-bold text-lg text-blue-800">Paso 1 — Datos personales</h2>
-            <input className="w-full border rounded-lg px-4 py-2" placeholder="Tu nombre"
-              value={form.nombre} onChange={e => actualizar('nombre', e.target.value)} />
             <select className="w-full border rounded-lg px-4 py-2"
               value={form.bachillerato_origen} onChange={e => actualizar('bachillerato_origen', e.target.value)}>
               <option value="">¿De qué bachillerato vienes?</option>
@@ -175,10 +173,47 @@ function TestVocacional() {
                 <option>Otro</option>
               </optgroup>
             </select>
-            <input className="w-full border rounded-lg px-4 py-2" placeholder="Tu municipio"
-              value={form.municipio} onChange={e => actualizar('municipio', e.target.value)} />
+            <select className="w-full border rounded-lg px-4 py-2"
+            value={form.municipio} onChange={e => actualizar('municipio', e.target.value)}>
+            <option value="">¿De qué municipio eres?</option>
+            <optgroup label="── Región Centro-Norte ──">
+              <option>Monclova</option>
+              <option>Frontera</option>
+              <option>San Buenaventura</option>
+              <option>Castaños</option>
+              <option>Abasolo</option>
+              <option>Cuatro Ciénegas</option>
+              <option>Ocampo</option>
+            </optgroup>
+            <optgroup label="── Región Sureste ──">
+              <option>Saltillo</option>
+              <option>Ramos Arizpe</option>
+              <option>Arteaga</option>
+              <option>General Cepeda</option>
+              <option>Parras de la Fuente</option>
+            </optgroup>
+            <optgroup label="── Región Norte ──">
+              <option>Piedras Negras</option>
+              <option>Nava</option>
+              <option>Allende</option>
+              <option>Zaragoza</option>
+              <option>Jiménez</option>
+              <option>Morelos</option>
+            </optgroup>
+            <optgroup label="── Región Laguna ──">
+              <option>Torreón</option>
+              <option>Francisco I. Madero</option>
+              <option>Matamoros</option>
+              <option>San Pedro de las Colonias</option>
+              <option>Viesca</option>
+            </optgroup>
+            <optgroup label="── Otro ──">
+              <option>Otro municipio de Coahuila</option>
+              <option>Otro estado de México</option>
+            </optgroup>
+          </select>
             <button onClick={() => setPaso(2)}
-              disabled={!form.nombre || !form.bachillerato_origen || !form.municipio}
+            disabled={!form.bachillerato_origen || !form.municipio}
               className="w-full bg-blue-700 text-white py-2 rounded-lg hover:bg-blue-800 disabled:opacity-50">
               Siguiente →
             </button>
@@ -272,9 +307,8 @@ function TestVocacional() {
             <div className="space-y-4">
 
               <div className="bg-blue-800 text-white rounded-2xl p-6 text-center">
-                <p className="text-blue-200 text-sm mb-1">Resultado para</p>
-                <h2 className="text-2xl font-bold">{resultado.aspirante}</h2>
-                <p className="mt-2 text-blue-200">{resultado.perfil_detectado}</p>
+              <h2 className="text-2xl font-bold">Tu Resultado</h2>
+              <p className="mt-2 text-blue-200">{resultado.perfil_detectado}</p>
               </div>
 
               {prediccionNorm.map((carrera, i) => (
