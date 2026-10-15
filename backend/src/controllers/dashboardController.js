@@ -4,10 +4,13 @@ const mongoose = require('mongoose');
 
 const getEstadisticas = async (req, res) => {
     let carreras = [];
+    let municipios = [];
     let totalChats = 0;
 
     try {
-        carreras = await obtenerEstadisticas();
+        const resultado = await obtenerEstadisticas();
+        carreras = resultado.carreras;
+        municipios = resultado.municipios;
     } catch (pgErr) {
         console.warn('PostgreSQL no disponible:', pgErr.message);
     }
@@ -22,6 +25,7 @@ const getEstadisticas = async (req, res) => {
 
     res.json({
         carreras,
+        municipios,
         total_chats: totalChats,
         actualizado: new Date()
     });

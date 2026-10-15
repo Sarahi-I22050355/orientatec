@@ -73,7 +73,7 @@ function Dashboard() {
                 <div className="space-y-4">
                   {datos.carreras.map((c, i) => {
                     const max = Math.max(...datos.carreras.map(x => Number(x.total)));
-                    const pct = Math.round((Number(c.total) / max) * 100);
+                    const pct = Math.round(Number(c.promedio_match));
                     return (
                       <div key={i}>
                         <div className="flex justify-between text-sm mb-1">
