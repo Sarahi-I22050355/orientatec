@@ -95,17 +95,17 @@ function Dashboard() {
 
             <div className="bg-white rounded-2xl shadow p-6">
               <h2 className="font-bold text-lg text-blue-900 mb-4">📍 Distribución por municipio</h2>
-              {datos.carreras.length === 0 ? (
-                <p className="text-gray-400 text-center py-8">Sin datos aún.</p>
-              ) : (
-                <div className="flex flex-wrap gap-2">
-                  {[...new Set(datos.carreras.map(c => c.municipio))].map((m, i) => (
-                    <span key={i} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                      📍 {m}
-                    </span>
-                  ))}
-                </div>
-              )}
+              {!datos.municipios || datos.municipios.length === 0 ? (
+              <p className="text-gray-400 text-center py-8">Sin datos aún.</p>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {datos.municipios.map((m, i) => (
+                  <span key={i} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                    📍 {m.municipio} <span className="font-bold">({m.total})</span>
+                  </span>
+                ))}
+              </div>
+            )}
             </div>
 
             <p className="text-center text-gray-400 text-xs mt-6">

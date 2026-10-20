@@ -49,7 +49,14 @@ function Chat() {
               ${msg.role === 'user'
                 ? 'bg-blue-700 text-white rounded-br-none'
                 : 'bg-white text-gray-800 shadow rounded-bl-none'}`}>
-              {msg.content}
+              {msg.role === 'assistant'
+                ? msg.content.split(/(https?:\/\/[^\s]+)/g).map((part, j) =>
+                    /^https?:\/\//.test(part)
+                      ? <a key={j} href={part} target="_blank" rel="noopener noreferrer"
+                          className="text-blue-600 underline hover:text-blue-800 break-all">{part}</a>
+                      : part
+                  )
+                : msg.content}
             </div>
           </div>
         ))}
