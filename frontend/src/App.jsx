@@ -1,19 +1,39 @@
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import Chat from './pages/Chat';
 import TestVocacional from './pages/TestVocacional';
 import Dashboard from './pages/Dashboard';
 
+function NavLink({ to, children }) {
+  const { pathname } = useLocation();
+  const isActive = pathname === to;
+
+  return (
+    <Link
+      to={to}
+      className={`relative text-base font-medium transition-colors duration-200 group
+        ${isActive ? 'text-blue-300' : 'text-white hover:text-blue-300'}`}
+    >
+      {children}
+      <span
+        className={`absolute -bottom-1 left-0 h-0.5 bg-blue-400 rounded-full transition-all duration-300
+          ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`}
+      />
+    </Link>
+  );
+}
+
 function App() {
   return (
     <BrowserRouter>
-      <nav className="bg-blue-950 text-white px-4 py-3 border-b border-blue-800">
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-          <img src="/logo_tecnm.png" alt="TecNM Campus Monclova" className="h-8 object-contain" />
-          <Link to="/" className="hover:text-blue-300 text-sm">Inicio</Link>
-          <Link to="/chat" className="hover:text-blue-300 text-sm">Chatbot</Link>
-          <Link to="/test" className="hover:text-blue-300 text-sm">Test Vocacional</Link>
-          <Link to="/dashboard" className="hover:text-blue-300 text-sm">DataPulse</Link>
+          <nav className="bg-blue-950 text-white px-6 py-4 border-b border-blue-800 sticky top-0 z-10">        <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+          <a href="https://tecmonclova.com/sitio/" target="_blank" rel="noopener noreferrer">
+          <img src="/logo_tecnm.png" alt="TecNM Campus Monclova" className="h-12 object-contain hover:opacity-80 transition-opacity duration-200" />
+          </a>
+          <NavLink to="/">Inicio</NavLink>
+          <NavLink to="/chat">Chatbot</NavLink>
+          <NavLink to="/test">Test Vocacional</NavLink>
+          <NavLink to="/dashboard">DataPulse</NavLink>
         </div>
       </nav>
       <div className="overflow-x-hidden">

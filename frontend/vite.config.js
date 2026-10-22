@@ -7,11 +7,11 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  server: {
+    server: {
     port: 3000,
     proxy: {
       '/api': {
-        target: 'http://localhost:4000',
+        target: 'https://orientatec.sarahi-dev.com',
         changeOrigin: true,
       }
     }
