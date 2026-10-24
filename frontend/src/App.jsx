@@ -26,23 +26,26 @@ function NavLink({ to, children }) {
 function App() {
   return (
     <BrowserRouter>
-          <nav className="bg-blue-950 text-white px-6 py-4 border-b border-blue-800 sticky top-0 z-10">        <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-          <a href="https://tecmonclova.com/sitio/" target="_blank" rel="noopener noreferrer">
-          <img src="/logo_tecnm.png" alt="TecNM Campus Monclova" className="h-12 object-contain hover:opacity-80 transition-opacity duration-200" />
-          </a>
-          <NavLink to="/">Inicio</NavLink>
-          <NavLink to="/chat">Chatbot</NavLink>
-          <NavLink to="/test">Test Vocacional</NavLink>
-          <NavLink to="/dashboard">DataPulse</NavLink>
+      <div className="flex flex-col h-screen overflow-hidden">
+        <nav className="bg-blue-950 text-white px-6 py-4 border-b border-blue-800 sticky top-0 z-50 shrink-0">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            <a href="https://tecmonclova.com/sitio/" target="_blank" rel="noopener noreferrer">
+              <img src="/logo_tecnm.png" alt="TecNM Campus Monclova" className="h-12 object-contain hover:opacity-80 transition-opacity duration-200" />
+            </a>
+            <NavLink to="/">Inicio</NavLink>
+            <NavLink to="/chat">Chatbot</NavLink>
+            <NavLink to="/test">Test Vocacional</NavLink>
+            <NavLink to="/dashboard">DataPulse</NavLink>
+          </div>
+        </nav>
+            <div className="flex-1 overflow-auto">
+            <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/chat" element={<Chat />} />
+            <Route path="/test" element={<TestVocacional />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Routes>
         </div>
-      </nav>
-      <div className="overflow-x-hidden">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/chat" element={<Chat />} />
-          <Route path="/test" element={<TestVocacional />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-        </Routes>
       </div>
     </BrowserRouter>
   );
