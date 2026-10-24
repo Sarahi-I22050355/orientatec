@@ -1,6 +1,15 @@
 import { useState, useEffect } from 'react';
 import { getEstadisticas } from '../api';
 
+const CARRERAS_BASE = [
+  'Ingeniería en Informática',
+  'Ingeniería en Electrónica',
+  'Ingeniería Industrial',
+  'Ingeniería en Mecánica',
+  'Ingeniería en Energías Renovables',
+  'Ingeniería en Gestión Empresarial',
+];
+
 function Dashboard() {
   const [datos, setDatos] = useState(null);
   const [cargando, setCargando] = useState(true);
@@ -23,92 +32,110 @@ function Dashboard() {
     return () => clearInterval(intervalo);
   }, []);
 
-  return (
-    <div className="min-h-screen bg-gray-50 px-6 py-10">
-      <div className="max-w-4xl mx-auto">
+  const carrerasMerged = CARRERAS_BASE.map(nombre => {
+    const encontrada = datos?.carreras.find(c => c.carrera === nombre);
+    return encontrada
+      ? { ...encontrada, total: Number(encontrada.total), promedio_match: Number(encontrada.promedio_match) }
+      : { carrera: nombre, total: 0, promedio_match: 0 };
+  });
 
-        <div className="flex justify-between items-center mb-8">
+  const totalTests = carrerasMerged.reduce((acc, c) => acc + c.total, 0);
+  const maxTotal = Math.max(...carrerasMerged.map(c => c.total), 1);
+  const carreraMasSolicitada = [...carrerasMerged].sort((a, b) => b.total - a.total).find(c => c.total > 0)?.carrera ?? '—';
+  return (
+    <div className="min-h-full px-6 py-10"
+      style={{ background: 'linear-gradient(135deg, #0a0f2e 0%, #0f1a3e 40%, #1a0a2e 100%)' }}>
+
+      {/* Fondo punteado */}
+      <div className="fixed inset-0 pointer-events-none"
+        style={{ backgroundImage: 'radial-gradient(circle, #ffffff0d 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
+
+      <div className="relative max-w-5xl mx-auto">
+
+        {/* Header */}
+        <div className="flex justify-between items-center mb-10">
           <div>
-            <h1 className="text-3xl font-bold text-blue-900">📈 DataPulse</h1>
-            <p className="text-gray-500">Panel de administración — Departamento de Difusión ITSM</p>
+            <h1 className="text-3xl font-bold text-white">DataPulse</h1>
+            <p className="text-blue-300/60 text-sm mt-1">Panel de administración — Departamento de Difusión ITSM</p>
           </div>
           <button onClick={cargar}
-            className="bg-blue-900 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-950">
-            🔄 Actualizar
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-white border border-white/10 hover:border-white/30 transition-all"
+            style={{ background: 'rgba(255,255,255,0.06)' }}>
+            <span className={cargando ? 'animate-spin' : ''}>⟳</span>
+            Actualizar
           </button>
         </div>
 
-        {cargando && (
-          <div className="text-center text-gray-400 py-20">Cargando estadísticas...</div>
+        {cargando && !datos && (
+          <div className="text-center text-white/30 py-32 text-lg">Cargando estadísticas...</div>
         )}
 
-        {!cargando && datos && (
+        {datos && (
           <>
+            {/* Tarjetas de resumen */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-              <div className="bg-white rounded-2xl shadow p-6 text-center">
-                <p className="text-4xl font-bold text-blue-900">
-                  {datos.carreras.reduce((acc, c) => acc + Number(c.total), 0)}
-                </p>
-                <p className="text-gray-500 mt-1">Tests completados</p>
+              <div className="rounded-2xl border border-white/10 p-6 text-center"
+                style={{ background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(8px)' }}>
+                <p className="text-5xl font-bold text-white mb-1">{totalTests}</p>
+                <p className="text-blue-300/60 text-sm">Tests completados</p>
               </div>
-              <div className="bg-white rounded-2xl shadow p-6 text-center">
-                <p className="text-4xl font-bold text-green-600">{datos.total_chats}</p>
-                <p className="text-gray-500 mt-1">Conversaciones de chat</p>
+              <div className="rounded-2xl border border-white/10 p-6 text-center"
+                style={{ background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(8px)' }}>
+                <p className="text-5xl font-bold text-green-400 mb-1">{datos.total_chats}</p>
+                <p className="text-blue-300/60 text-sm">Conversaciones de chat</p>
               </div>
-              <div className="bg-white rounded-2xl shadow p-6 text-center">
-                <p className="text-4xl font-bold text-blue-700" style={{fontSize: '1.25rem'}}>
-                  {datos.carreras.length > 0 ? datos.carreras[0].carrera : '—'}
-                </p>
-                <p className="text-gray-500 mt-1">Carrera más solicitada</p>
+              <div className="rounded-2xl border border-white/10 p-6 text-center"
+                style={{ background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(8px)' }}>
+                <p className="text-lg font-bold text-purple-300 mb-1">{carreraMasSolicitada}</p>
+                <p className="text-blue-300/60 text-sm">Carrera más solicitada</p>
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow p-6 mb-6">
-              <h2 className="font-bold text-lg text-blue-900 mb-4">🎓 Interés por carrera</h2>
-              {datos.carreras.length === 0 ? (
-                <p className="text-gray-400 text-center py-8">
-                  Aún no hay datos. Los resultados aparecerán cuando los aspirantes completen el test.
-                </p>
-              ) : (
-                <div className="space-y-4">
-                  {datos.carreras.map((c, i) => {
-                    const max = Math.max(...datos.carreras.map(x => Number(x.total)));
-                    const pct = Math.round(Number(c.promedio_match));
-                    return (
-                      <div key={i}>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span className="font-medium text-gray-700">{c.carrera}</span>
-                          <span className="text-gray-500">
-                            {c.total} aspirantes · {Number(c.promedio_match).toFixed(1)}% match promedio
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-100 rounded-full h-3">
-                          <div className="bg-blue-700 h-3 rounded-full transition-all"
-                            style={{ width: `${pct}%` }} />
-                        </div>
+            {/* Interés por carrera */}
+            <div className="rounded-2xl border border-white/10 p-6 mb-6"
+              style={{ background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(8px)' }}>
+              <h2 className="font-bold text-white mb-6">🎓 Interés por carrera</h2>
+              <div className="space-y-5">
+                {carrerasMerged.map((c, i) => {
+                  const pct = c.promedio_match;
+                  const colores = ['#2563eb', '#7c3aed', '#d97706', '#059669', '#0891b2', '#dc2626'];
+                  return (
+                    <div key={i}>
+                      <div className="flex justify-between text-sm mb-2">
+                        <span className="font-medium text-white/80">{c.carrera}</span>
+                        <span className="text-white/40">
+                          {c.total} aspirantes · {c.promedio_match.toFixed(1)}% match
+                        </span>
                       </div>
-                    );
-                  })}
+                      <div className="w-full rounded-full h-2" style={{ background: 'rgba(255,255,255,0.08)' }}>
+                        <div className="h-2 rounded-full transition-all duration-700"
+                          style={{ width: `${pct}%`, background: colores[i % colores.length] }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Municipios */}
+            <div className="rounded-2xl border border-white/10 p-6"
+              style={{ background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(8px)' }}>
+              <h2 className="font-bold text-white mb-4">📍 Distribución por municipio</h2>
+              {!datos.municipios || datos.municipios.length === 0 ? (
+                <p className="text-white/30 text-center py-8">Sin datos aún.</p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {datos.municipios.map((m, i) => (
+                    <span key={i} className="px-3 py-1.5 rounded-full text-sm font-medium border border-white/10"
+                      style={{ background: 'rgba(124,58,237,0.15)', color: '#c4b5fd' }}>
+                      📍 {m.municipio} <span className="font-bold">({m.total})</span>
+                    </span>
+                  ))}
                 </div>
               )}
             </div>
 
-            <div className="bg-white rounded-2xl shadow p-6">
-              <h2 className="font-bold text-lg text-blue-900 mb-4">📍 Distribución por municipio</h2>
-              {!datos.municipios || datos.municipios.length === 0 ? (
-              <p className="text-gray-400 text-center py-8">Sin datos aún.</p>
-            ) : (
-              <div className="flex flex-wrap gap-2">
-                {datos.municipios.map((m, i) => (
-                  <span key={i} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                    📍 {m.municipio} <span className="font-bold">({m.total})</span>
-                  </span>
-                ))}
-              </div>
-            )}
-            </div>
-
-            <p className="text-center text-gray-400 text-xs mt-6">
+            <p className="text-center text-white/20 text-xs mt-6">
               Última actualización: {new Date(datos.actualizado).toLocaleString('es-MX')}
             </p>
           </>
