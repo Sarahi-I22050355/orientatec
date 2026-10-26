@@ -1,6 +1,5 @@
 const { obtenerEstadisticas } = require('../models/Aspirante');
 const Conversacion = require('../models/Conversacion');
-const mongoose = require('mongoose');
 
 const getEstadisticas = async (req, res) => {
     let carreras = [];
@@ -16,9 +15,7 @@ const getEstadisticas = async (req, res) => {
     }
 
     try {
-        if (mongoose.connection.readyState === 1) {
-            totalChats = await Conversacion.countDocuments();
-        }
+        totalChats = await Conversacion.countDocuments();
     } catch (mongoErr) {
         console.warn('MongoDB no disponible:', mongoErr.message);
     }

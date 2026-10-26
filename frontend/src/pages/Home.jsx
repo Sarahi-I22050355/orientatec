@@ -1,6 +1,12 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 function Home() {
+
+  useEffect(() => {
+    fetch('/robot.lottie').catch(() => {});
+  }, []);
+
   return (
       <div className="min-h-screen text-white flex flex-col overflow-x-hidden" style={{ background: 'linear-gradient(135deg, #0a0f2e 0%, #0f1a3e 40%, #1a0a2e 100%)' }}>
       {/* Dot grid background */}
