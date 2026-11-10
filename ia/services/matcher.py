@@ -67,6 +67,16 @@ CARRERAS = {
         "entornos": ["oficina", "empresa", "emprendimiento"],
         "razonamiento": "Tu perfil de liderazgo y visión empresarial te posicionan para dirigir equipos y crear modelos de negocio en el dinámico ecosistema industrial de Coahuila.",
         "accion": "Invitarte al programa de emprendimiento e incubadora de negocios del campus."
+    },
+    "ING_MECATRONICA": {
+        "nombre": "Ingeniería Mecatrónica",
+        "vector": [90, 75, 50, 85],
+        "keywords": ["mecatronica", "mecatrónica", "robot", "brazo robotico", "plc", "automata", "servomotor", "neumatica", "hidraulica", "mecanismos", "cnc", "impresion 3d", "drones", "manufactura avanzada"],
+        "materias": ["Física", "Programación"],
+        "pasatiempos": ["Armar circuitos", "Diseñar piezas"],
+        "entornos": ["planta", "taller"],
+        "razonamiento": "Tu combinación de lógica, habilidad manual y gusto por la tecnología encaja con la mecatrónica: integrar mecánica, electrónica y programación para diseñar, construir y mantener robots y sistemas automatizados que necesita la industria de la región.",
+        "accion": "Invitarte a conocer el Laboratorio de ingeniería y tecnología del campus."
     }
 }
 
@@ -140,6 +150,7 @@ def detectar_perfil(resultados: list[ResultadoCarrera]) -> str:
         "ING_ELECTRONICA":  "Perfil electrónico-automatización",
         "ING_MECANICA":     "Perfil mecánico-industrial",
         "ING_ENERGIAS":     "Perfil sustentable-energético",
-        "ING_GESTION":      "Perfil empresarial-líder"
+        "ING_GESTION":      "Perfil empresarial-líder",
+        "ING_MECATRONICA":  "Perfil mecatrónico-robótica"
     }
     return perfiles.get(top, "Perfil mixto")
