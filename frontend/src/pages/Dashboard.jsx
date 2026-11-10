@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { getEstadisticas } from '../api';
+import { useIdioma } from '../i18n/contexto';
 
 const CARRERAS_BASE = [
   'Ingeniería en Informática',
@@ -12,6 +13,7 @@ const CARRERAS_BASE = [
 ];
 
 function Dashboard() {
+  const { t, etiqueta } = useIdioma();
   const [datos, setDatos] = useState(null);
   const [cargando, setCargando] = useState(true);
   const enCurso = useRef(false);
@@ -68,19 +70,19 @@ function Dashboard() {
         <div className="flex justify-between items-center mb-10">
           <div>
             <h1 className="text-3xl font-bold text-white">DataPulse</h1>
-            <p className="text-blue-300/60 text-sm mt-1">Panel de administración — Departamento de Difusión ITSM</p>
+            <p className="text-blue-300/60 text-sm mt-1">{t.dashboard.subtitulo}</p>
           </div>
           <button onClick={cargar}
             className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-white border border-white/10 hover:border-white/30 transition-all"
             style={{ background: 'rgba(255,255,255,0.06)' }}>
             <span className={cargando ? 'animate-spin' : ''}>⟳</span>
-            Actualizar
+            {t.dashboard.actualizar}
           </button>
         </div>
 
         {cargando && !datos && (
           // Esqueleto de carga: misma forma que el panel para que no "salte".
-          <div className="animate-pulse" role="status" aria-label="Cargando estadísticas...">
+          <div className="animate-pulse" role="status" aria-label={t.dashboard.cargando}>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
               {[0, 1, 2].map(i => (
                 <div key={i} className="rounded-2xl border border-white/10 p-6 h-[116px]"
@@ -110,24 +112,24 @@ function Dashboard() {
               <div className="rounded-2xl border border-white/10 p-6 text-center"
                 style={{ background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(8px)' }}>
                 <p className="text-5xl font-bold text-white mb-1">{totalTests}</p>
-                <p className="text-blue-300/60 text-sm">Tests completados</p>
+                <p className="text-blue-300/60 text-sm">{t.dashboard.tests}</p>
               </div>
               <div className="rounded-2xl border border-white/10 p-6 text-center"
                 style={{ background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(8px)' }}>
                 <p className="text-5xl font-bold text-green-400 mb-1">{datos.total_chats}</p>
-                <p className="text-blue-300/60 text-sm">Conversaciones de chat</p>
+                <p className="text-blue-300/60 text-sm">{t.dashboard.chats}</p>
               </div>
               <div className="rounded-2xl border border-white/10 p-6 text-center"
                 style={{ background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(8px)' }}>
-                <p className="text-lg font-bold text-purple-300 mb-1">{carreraMasSolicitada}</p>
-                <p className="text-blue-300/60 text-sm">Carrera más solicitada</p>
+                <p className="text-lg font-bold text-purple-300 mb-1">{etiqueta(carreraMasSolicitada)}</p>
+                <p className="text-blue-300/60 text-sm">{t.dashboard.masSolicitada}</p>
               </div>
             </div>
 
             {/* Interés por carrera */}
             <div className="rounded-2xl border border-white/10 p-6 mb-6"
               style={{ background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(8px)' }}>
-              <h2 className="font-bold text-white mb-6">🎓 Interés por carrera</h2>
+              <h2 className="font-bold text-white mb-6">{t.dashboard.interes}</h2>
               <div className="space-y-5">
                 {carrerasMerged.map((c, i) => {
                   const pct = c.promedio_match;
@@ -135,9 +137,9 @@ function Dashboard() {
                   return (
                     <div key={i}>
                       <div className="flex justify-between text-sm mb-2">
-                        <span className="font-medium text-white/80">{c.carrera}</span>
+                        <span className="font-medium text-white/80">{etiqueta(c.carrera)}</span>
                         <span className="text-white/40">
-                          {c.total} aspirantes · {c.promedio_match.toFixed(1)}% match
+                          {c.total} {t.dashboard.aspirantes} · {c.promedio_match.toFixed(1)}% {t.dashboard.match}
                         </span>
                       </div>
                       <div className="w-full rounded-full h-2" style={{ background: 'rgba(255,255,255,0.08)' }}>
@@ -153,15 +155,15 @@ function Dashboard() {
             {/* Municipios */}
             <div className="rounded-2xl border border-white/10 p-6"
               style={{ background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(8px)' }}>
-              <h2 className="font-bold text-white mb-4">📍 Distribución por municipio</h2>
+              <h2 className="font-bold text-white mb-4">{t.dashboard.municipios}</h2>
               {!datos.municipios || datos.municipios.length === 0 ? (
-                <p className="text-white/30 text-center py-8">Sin datos aún.</p>
+                <p className="text-white/30 text-center py-8">{t.dashboard.sinDatos}</p>
               ) : (
                 <div className="flex flex-wrap gap-2">
                   {datos.municipios.map((m, i) => (
                     <span key={i} className="px-3 py-1.5 rounded-full text-sm font-medium border border-white/10"
                       style={{ background: 'rgba(124,58,237,0.15)', color: '#c4b5fd' }}>
-                      📍 {m.municipio} <span className="font-bold">({m.total})</span>
+                      📍 {etiqueta(m.municipio)} <span className="font-bold">({m.total})</span>
                     </span>
                   ))}
                 </div>
@@ -169,7 +171,7 @@ function Dashboard() {
             </div>
 
             <p className="text-center text-white/20 text-xs mt-6">
-              Última actualización: {new Date(datos.actualizado).toLocaleString('es-MX')}
+              {t.dashboard.ultima} {new Date(datos.actualizado).toLocaleString(t.dashboard.locale)}
             </p>
           </>
         )}
