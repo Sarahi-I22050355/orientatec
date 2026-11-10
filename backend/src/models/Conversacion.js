@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 
 const conversacionSchema = new mongoose.Schema({
-    sesion_id: String,
+    // Índice: cada mensaje del chat busca la conversación por sesion_id.
+    sesion_id: { type: String, index: true },
     mensajes: [
         {
             role: { type: String, enum: ['user', 'assistant'] },
