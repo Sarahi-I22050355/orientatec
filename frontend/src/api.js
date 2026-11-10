@@ -5,11 +5,12 @@ baseURL: import.meta.env.VITE_API_URL || '/api',
 });
 
 // ─── CHAT ────────────────────────────────────────────────────────────────────
-export const enviarMensaje = async (mensaje, historial, sesion_id) => {
+export const enviarMensaje = async (mensaje, historial, sesion_id, idioma = 'es') => {
     const { data } = await api.post('/chat/mensaje', {
         mensaje,
         historial,
-        sesion_id
+        sesion_id,
+        idioma
     });
     return data;
 };

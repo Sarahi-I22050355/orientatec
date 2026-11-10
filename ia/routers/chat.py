@@ -9,7 +9,7 @@ router = APIRouter(prefix="/chat", tags=["Chatbot OrientaTec"])
 # servidor y los demás usuarios (chat y test) esperaban su turno.
 @router.post("/mensaje", response_model=RespuestaChat)
 def enviar_mensaje(data: MensajeChat):
-    resultado = chat_con_orientatec(data.mensaje, data.historial)
+    resultado = chat_con_orientatec(data.mensaje, data.historial, data.idioma)
     return RespuestaChat(
         respuesta=resultado["respuesta"],
         perfil_detectado=resultado.get("perfil_detectado")
