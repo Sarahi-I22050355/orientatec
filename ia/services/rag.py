@@ -12,8 +12,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-GEMINI_MODEL = "gemini-3.5-flash-lite"
-GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent?key={GEMINI_API_KEY}"
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
+# La clave se envía en la cabecera x-goog-api-key y NO en la URL, para que no
+# aparezca en logs ni en mensajes de error (requests incluye la URL en sus errores).
+GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent"
+# Segundos máximos para conectar / esperar respuesta de Gemini.
+GEMINI_TIMEOUT = (10, float(os.getenv("GEMINI_TIMEOUT_SEG", "45")))
 
 CONOCIMIENTO_ITSM = """
 Eres OrientaTec, el asistente virtual del TecNM Campus Monclova (ITSM).
@@ -117,9 +121,9 @@ Público: CFE, IMSS, ISSSTE, Presidencia Municipal de Monclova y Frontera, SEP C
 def chat_con_orientatec(mensaje: str, historial: list[dict]) -> dict:
     contents = []
 
-    for msg in historial:
-        role = "user" if msg["role"] == "user" else "model"
-        contents.append({"role": role, "parts": [{"text": msg["content"]}]})
+    for msg in historial or []:
+        role = "user" if msg.get("role") == "user" else "model"
+        contents.append({"role": role, "parts": [{"text": str(msg.get("content", ""))}]})
 
     contents.append({"role": "user", "parts": [{"text": mensaje}]})
 
@@ -128,7 +132,12 @@ def chat_con_orientatec(mensaje: str, historial: list[dict]) -> dict:
         "contents": contents
     }
 
-    response = requests.post(GEMINI_URL, json=payload)
+    response = requests.post(
+        GEMINI_URL,
+        json=payload,
+        headers={"x-goog-api-key": GEMINI_API_KEY or ""},
+        timeout=GEMINI_TIMEOUT,
+    )
     response.raise_for_status()
 
     data = response.json()

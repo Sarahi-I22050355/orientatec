@@ -1,21 +1,22 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 
 # ─── ENTRADA DEL ASPIRANTE ───────────────────────────────────────────────────
 
 class PerfilAspirante(BaseModel):
-    nombre: str = 'Anónimo'
-    bachillerato_origen: str  # CBTis, COBAC, Privado, etc.
-    municipio: str
-    materias_favoritas: list[str]
-    pasatiempos: list[str]
-    habilidad_logica: int        # 0-100
-    habilidad_diseno: int        # 0-100
-    habilidad_liderazgo: int     # 0-100
-    habilidad_manual: int        # 0-100
-    entorno_laboral: str
-    prioridad_profesional: str
-    texto_libre: Optional[str] = None  # Respuesta abierta del chatbot
+    # Límites de longitud = tamaño de las columnas VARCHAR(100) en PostgreSQL.
+    nombre: str = Field('Anónimo', max_length=100)
+    bachillerato_origen: str = Field(max_length=100)  # CBTis, COBAC, Privado, etc.
+    municipio: str = Field(max_length=100)
+    materias_favoritas: list[str] = Field(max_length=20)
+    pasatiempos: list[str] = Field(max_length=20)
+    habilidad_logica: int = Field(ge=0, le=100)
+    habilidad_diseno: int = Field(ge=0, le=100)
+    habilidad_liderazgo: int = Field(ge=0, le=100)
+    habilidad_manual: int = Field(ge=0, le=100)
+    entorno_laboral: str = Field(max_length=200)
+    prioridad_profesional: str = Field(max_length=200)
+    texto_libre: Optional[str] = Field(None, max_length=3000)  # Respuesta abierta
 
 # ─── RESULTADO DEL MATCH VOCACIONAL ──────────────────────────────────────────
 
@@ -34,7 +35,7 @@ class RespuestaMatch(BaseModel):
 # ─── CHATBOT ─────────────────────────────────────────────────────────────────
 
 class MensajeChat(BaseModel):
-    mensaje: str
+    mensaje: str = Field(min_length=1, max_length=4000)
     historial: Optional[list[dict]] = []
 
 class RespuestaChat(BaseModel):
