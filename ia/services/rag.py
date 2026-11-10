@@ -1,4 +1,5 @@
 import os
+import re
 import requests
 
 import socket
@@ -148,10 +149,65 @@ Público: CFE, IMSS, ISSSTE, Presidencia Municipal de Monclova y Frontera, SEP C
 14. Cuando el estudiante pida más información, quiera conocer el campus, o pregunte por admisiones, becas, carreras o cualquier tema institucional, comparte este enlace oficial: https://tecmonclova.com/web/ — menciona que ahí encontrará información actualizada del ITSM.
 15. Responde siempre de forma breve y conversacional, máximo 3-4 oraciones por mensaje.
 16. Nunca escribas listas largas ni párrafos extensos. Si tienes mucho que decir, prioriza lo más relevante y haz una pregunta al final para continuar la conversación naturalmente.
-17. Cuando alguien pregunte dónde está el campus, su ubicación o cómo llegar, responde con: "El TecNM Campus Monclova está en Carretera 57 km 4.5, Unidad Tecnológica y Universidad, Monclova, Coahuila. 📍 Aquí te dejo cómo llegar: https://maps.app.goo.gl/iP2XdrRj1s7zfYTf7 — También puedes llamarnos al 866 649 0370." (si te escribe en inglés, da la misma información y los mismos enlaces en inglés).
+17. Cuando alguien pregunte dónde está el campus, su ubicación o cómo llegar, responde con: "El TecNM Campus Monclova está en Carretera 57 km 4.5, Unidad Tecnológica y Universidad, Monclova, Coahuila. 📍 Aquí te dejo cómo llegar: https://maps.app.goo.gl/iP2XdrRj1s7zfYTf7 — También puedes llamarnos al 866 649 0370." (si te escribe en inglés, usa: "TecNM Campus Monclova is located at Carretera 57 km 4.5, Unidad Tecnológica y Universidad, Monclova, Coahuila. 📍 Here is how to get there: https://maps.app.goo.gl/iP2XdrRj1s7zfYTf7 — You can also call us at 866 649 0370.")
+18. Las respuestas textuales de arriba y la información de este documento están escritas en español, pero eso NO significa que debas responder en español: si el estudiante escribe en inglés, tradúcelas al inglés.
 """
 
-def chat_con_orientatec(mensaje: str, historial: list[dict]) -> dict:
+# ─── IDIOMA DE LA RESPUESTA ──────────────────────────────────────────────────
+# Toda la información del prompt está en español y algunas respuestas vienen
+# "textuales" (ubicación, becas). Con solo la regla 9, Gemini a veces copiaba
+# ese texto en español aunque le preguntaran en inglés (pasaba con "Where is the
+# campus?" y "Are there scholarships available?"). Por eso en cada mensaje se le
+# dice explícitamente en qué idioma contestar.
+
+_PALABRAS_ES = {
+    "que", "qué", "donde", "dónde", "como", "cómo", "cual", "cuál", "cuales", "cuáles",
+    "hay", "el", "la", "los", "las", "un", "una", "de", "del", "en", "es", "son", "y",
+    "por", "para", "con", "sin", "mi", "te", "tu", "tienen", "tiene", "quiero",
+    "gusta", "gustan", "hola", "gracias", "becas", "beca", "carrera", "carreras", "está",
+    "esta", "estoy", "puedo", "sí", "no", "pero", "más", "muy", "también", "cuánto",
+    "actividades", "disponibles", "extracurriculares", "materias", "escuela",
+}
+_PALABRAS_EN = {
+    "what", "where", "how", "which", "who", "when", "why", "is", "are", "the", "an",
+    "of", "in", "on", "and", "or", "to", "for", "with", "my", "you", "your", "do",
+    "does", "there", "can", "i", "i'm", "like", "want", "hi", "hello", "thanks", "thank",
+    "scholarship", "scholarships", "degree", "degrees", "available", "offer", "activities",
+    "extracurricular", "subjects", "school", "it", "yes", "but", "more", "very", "also",
+}
+
+NOMBRE_IDIOMA = {"es": "español", "en": "inglés (English)"}
+
+
+def detectar_idioma(texto: str, idioma_sitio: str = "es") -> str:
+    """Devuelve 'es' o 'en' según el texto del estudiante.
+
+    Si el texto no deja claro el idioma (por ejemplo "ok" o "Informática"),
+    se usa el idioma seleccionado en el sitio.
+    """
+    respaldo = idioma_sitio if idioma_sitio in NOMBRE_IDIOMA else "es"
+    t = (texto or "").lower()
+    if "¿" in t or "¡" in t or "ñ" in t:
+        return "es"
+    palabras = re.findall(r"[a-záéíóúü']+", t)
+    es = sum(1 for p in palabras if p in _PALABRAS_ES) + sum(1 for c in t if c in "áéíóú")
+    en = sum(1 for p in palabras if p in _PALABRAS_EN)
+    if es > en:
+        return "es"
+    if en > es:
+        return "en"
+    return respaldo
+
+
+def chat_con_orientatec(mensaje: str, historial: list[dict], idioma: str = "es") -> dict:
+    idioma_respuesta = detectar_idioma(mensaje, idioma)
+    instruccion_idioma = (
+        "\n=== IDIOMA DE ESTA RESPUESTA (OBLIGATORIO) ===\n"
+        f"El último mensaje del estudiante está en {NOMBRE_IDIOMA[idioma_respuesta]}. "
+        f"Escribe TODA tu respuesta en {NOMBRE_IDIOMA[idioma_respuesta]}, incluidas las "
+        "respuestas textuales, becas, ubicación y datos de este documento (tradúcelos si hace falta). "
+        "Los enlaces y números de teléfono se quedan igual.\n"
+    )
     contents = []
 
     for msg in historial or []:
@@ -161,7 +217,7 @@ def chat_con_orientatec(mensaje: str, historial: list[dict]) -> dict:
     contents.append({"role": "user", "parts": [{"text": mensaje}]})
 
     payload = {
-        "system_instruction": {"parts": [{"text": CONOCIMIENTO_ITSM}]},
+        "system_instruction": {"parts": [{"text": CONOCIMIENTO_ITSM + instruccion_idioma}]},
         "contents": contents
     }
 

@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Literal, Optional
 
 # ─── ENTRADA DEL ASPIRANTE ───────────────────────────────────────────────────
 
@@ -37,6 +37,9 @@ class RespuestaMatch(BaseModel):
 class MensajeChat(BaseModel):
     mensaje: str = Field(min_length=1, max_length=4000)
     historial: Optional[list[dict]] = []
+    # Idioma seleccionado en el sitio. Solo se usa si no se puede saber el
+    # idioma del mensaje; el bot responde en el idioma en que le escriben.
+    idioma: Literal['es', 'en'] = 'es'
 
 class RespuestaChat(BaseModel):
     respuesta: str

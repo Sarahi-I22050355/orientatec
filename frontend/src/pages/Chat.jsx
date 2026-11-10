@@ -24,7 +24,7 @@ const conSaludo = (lista, saludo) =>
   lista.map(m => m.inicial ? { role: m.role, content: saludo } : m);
 
 function Chat() {
-  const { t } = useIdioma();
+  const { idioma, t } = useIdioma();
   // El saludo inicial se escribe en el idioma del sitio. Mientras la persona no
   // haya escrito nada, cambia si se cambia el idioma; al enviar el primer
   // mensaje queda fijo en el idioma en que se mostró.
@@ -145,7 +145,7 @@ function Chat() {
 
     try {
       const historial = previos.map(m => ({ role: m.role, content: m.content }));
-      const res = await enviarMensaje(textoEnviar, historial, sesionId);
+      const res = await enviarMensaje(textoEnviar, historial, sesionId, idioma);
       await new Promise(r => setTimeout(r, 800)); 
 
       const texto = res.respuesta.toLowerCase();
