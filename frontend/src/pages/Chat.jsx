@@ -12,6 +12,11 @@ const SEGMENTOS = {
   JUMP:     [391, 479],
 };
 
+// Identificador de sesión difícil de adivinar (antes era solo la hora en ms,
+// lo que permitía adivinar sesiones ajenas). Se conserva el prefijo "sesion_".
+const crearSesionId = () =>
+  `sesion_${globalThis.crypto?.randomUUID?.() ?? `${Date.now()}_${Math.random().toString(36).slice(2)}`}`;
+
 const SUGERENCIAS = [
   '¿Qué carreras tienen?',
   '¿Hay becas disponibles?',
@@ -26,11 +31,15 @@ function Chat() {
   const [input, setInput] = useState('');
   const [cargando, setCargando] = useState(false);
   const [mostrarSugerencias, setMostrarSugerencias] = useState(true);
-  const sesion_id = useRef(`sesion_${Date.now()}`);
+  const [sesionId] = useState(crearSesionId);
   const canvasRef = useRef(null);
   const animRef = useRef(null);
-  const audioRef = useRef(new Audio('/notify.wav'));
+  // El audio se crea una sola vez al usarse (antes se creaba un objeto Audio
+  // nuevo en cada renderizado, es decir, cada 18 ms durante el efecto de escritura).
+  const audioRef = useRef(null);
   const segActual = useRef('IDLE');
+  // Animación de escritura en curso: { intervalo, final }
+  const escrituraRef = useRef(null);
 
   const volverIdle = () => {
     if (!animRef.current) return;
@@ -83,24 +92,44 @@ function Chat() {
   return () => {
     console.error = originalError; // restaurar
     animRef.current?.destroy();
+    clearInterval(escrituraRef.current?.intervalo);
   };
   }, []);
 
   const typewriter = (texto, historialActual) => {
+    const final = [...historialActual, { role: 'assistant', content: texto }];
     let i = 0;
     const intervalo = setInterval(() => {
       i++;
       setMensajes([...historialActual, { role: 'assistant', content: texto.slice(0, i) }]);
-      if (i >= texto.length) clearInterval(intervalo);
+      if (i >= texto.length) {
+        clearInterval(intervalo);
+        escrituraRef.current = null;
+      }
     }, 18);
+    escrituraRef.current = { intervalo, final };
+  };
+
+  // Si el usuario envía otro mensaje mientras la respuesta anterior se sigue
+  // "escribiendo", se completa de inmediato. Antes la animación anterior seguía
+  // corriendo, borraba de la pantalla el mensaje nuevo y la respuesta quedaba
+  // cortada en el historial enviado a la IA.
+  const terminarEscritura = () => {
+    const actual = escrituraRef.current;
+    if (!actual) return null;
+    clearInterval(actual.intervalo);
+    escrituraRef.current = null;
+    setMensajes(actual.final);
+    return actual.final;
   };
 
   const enviar = async (mensajeOverride) => {
     const textoEnviar = mensajeOverride || input;
     if (!textoEnviar.trim() || cargando) return;
     setMostrarSugerencias(false);
+    const previos = terminarEscritura() ?? mensajes;
     const nuevoMensaje = { role: 'user', content: textoEnviar };
-    const historialActual = [...mensajes, nuevoMensaje];
+    const historialActual = [...previos, nuevoMensaje];
     setMensajes(historialActual);
     setInput('');
     setCargando(true);
@@ -113,8 +142,8 @@ function Chat() {
     animRef.current?.play();
 
     try {
-      const historial = mensajes.map(m => ({ role: m.role, content: m.content }));
-      const res = await enviarMensaje(textoEnviar, historial, sesion_id.current);
+      const historial = previos.map(m => ({ role: m.role, content: m.content }));
+      const res = await enviarMensaje(textoEnviar, historial, sesionId);
       await new Promise(r => setTimeout(r, 800)); 
 
       const texto = res.respuesta.toLowerCase();
@@ -128,6 +157,7 @@ function Chat() {
 
       await new Promise(r => setTimeout(r, 1400));
 
+      audioRef.current ??= new Audio('/notify.mp3');
       audioRef.current.currentTime = 0;
       audioRef.current.play().catch(() => {});
       typewriter(res.respuesta, historialActual);

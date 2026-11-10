@@ -82,6 +82,7 @@ function ChatBox({ mensajes, cargando, input, setInput, onEnviar, mostrarSugeren
             className="flex-1 rounded-full px-5 py-2.5 text-sm text-white outline-none border border-white/15 focus:border-blue-500/60 transition-colors"
             style={{ background: 'rgba(255,255,255,0.06)' }}
             placeholder="Escribe tu mensaje..."
+            maxLength={4000}
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && onEnviar()}

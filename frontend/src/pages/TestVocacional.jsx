@@ -141,6 +141,8 @@ function TestVocacional() {
 
   const normalizarPorcentajes = (prediccion) => {
     const total = prediccion.reduce((sum, c) => sum + c.porcentaje_match, 0);
+    // Evita "NaN%" si todas las carreras tuvieran 0 puntos.
+    if (!total) return prediccion;
     return prediccion.map(c => ({
       ...c,
       porcentaje_match: Math.round((c.porcentaje_match / total) * 1000) / 10
