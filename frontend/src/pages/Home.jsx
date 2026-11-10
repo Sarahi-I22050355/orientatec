@@ -30,12 +30,16 @@ function Home() {
             {/* Engranaje girando */}
             <img
               src="/engranaje.svg"
+              alt=""
+              aria-hidden="true"
               className="absolute inset-0 w-full h-full object-contain opacity-[100]"
               style={{ animation: 'spin-gear 40s linear infinite' }}
             />
             {/* Indio — centrado en el engranaje */}
             <img
               src="/indio.svg"
+              alt=""
+              aria-hidden="true"
               className="absolute w-[590px] h-[590px] object-contain opacity-[100]"
               style={{ top: '50%', left: '50%', transform: 'translate(-20%, -53%)' }}
             />          

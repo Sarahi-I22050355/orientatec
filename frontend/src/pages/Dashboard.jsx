@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { getEstadisticas } from '../api';
 
 const CARRERAS_BASE = [
@@ -13,23 +13,35 @@ const CARRERAS_BASE = [
 function Dashboard() {
   const [datos, setDatos] = useState(null);
   const [cargando, setCargando] = useState(true);
+  const enCurso = useRef(false);
 
-  const cargar = async () => {
+  const traer = () => {
+    // Evita peticiones duplicadas si la anterior aún no termina.
+    if (enCurso.current) return;
+    enCurso.current = true;
+    getEstadisticas()
+      .then(res => setDatos(res))
+      .catch(() => console.error('Error al cargar estadísticas'))
+      .finally(() => {
+        enCurso.current = false;
+        setCargando(false);
+      });
+  };
+
+  const cargar = () => {
+    if (enCurso.current) return;
     setCargando(true);
-    try {
-      const res = await getEstadisticas();
-      setDatos(res);
-    } catch {
-      console.error('Error al cargar estadísticas');
-    } finally {
-      setCargando(false);
-    }
+    traer();
   };
 
   useEffect(() => {
-    cargar();
-    const intervalo = setInterval(cargar, 30000);
+    traer();
+    const intervalo = setInterval(() => {
+      // No consultar mientras la pestaña está oculta.
+      if (!document.hidden) cargar();
+    }, 30000);
     return () => clearInterval(intervalo);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const carrerasMerged = CARRERAS_BASE.map(nombre => {
@@ -40,7 +52,6 @@ function Dashboard() {
   });
 
   const totalTests = carrerasMerged.reduce((acc, c) => acc + c.total, 0);
-  const maxTotal = Math.max(...carrerasMerged.map(c => c.total), 1);
   const carreraMasSolicitada = [...carrerasMerged].sort((a, b) => b.total - a.total).find(c => c.total > 0)?.carrera ?? '—';
   return (
     <div className="min-h-full px-6 py-10"
@@ -67,7 +78,28 @@ function Dashboard() {
         </div>
 
         {cargando && !datos && (
-          <div className="text-center text-white/30 py-32 text-lg">Cargando estadísticas...</div>
+          // Esqueleto de carga: misma forma que el panel para que no "salte".
+          <div className="animate-pulse" role="status" aria-label="Cargando estadísticas...">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+              {[0, 1, 2].map(i => (
+                <div key={i} className="rounded-2xl border border-white/10 p-6 h-[116px]"
+                  style={{ background: 'rgba(255,255,255,0.04)' }}>
+                  <div className="h-10 w-16 mx-auto rounded-lg bg-white/10 mb-3" />
+                  <div className="h-3 w-32 mx-auto rounded bg-white/10" />
+                </div>
+              ))}
+            </div>
+            <div className="rounded-2xl border border-white/10 p-6 space-y-6"
+              style={{ background: 'rgba(255,255,255,0.04)' }}>
+              <div className="h-4 w-40 rounded bg-white/10" />
+              {CARRERAS_BASE.map(nombre => (
+                <div key={nombre} className="space-y-2">
+                  <div className="h-3 w-56 rounded bg-white/10" />
+                  <div className="h-2 w-full rounded-full bg-white/10" />
+                </div>
+              ))}
+            </div>
+          </div>
         )}
 
         {datos && (

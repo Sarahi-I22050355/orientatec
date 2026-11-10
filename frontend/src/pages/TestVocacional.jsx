@@ -141,6 +141,8 @@ function TestVocacional() {
 
   const normalizarPorcentajes = (prediccion) => {
     const total = prediccion.reduce((sum, c) => sum + c.porcentaje_match, 0);
+    // Evita "NaN%" si todas las carreras tuvieran 0 puntos.
+    if (!total) return prediccion;
     return prediccion.map(c => ({
       ...c,
       porcentaje_match: Math.round((c.porcentaje_match / total) * 1000) / 10
@@ -289,7 +291,7 @@ function TestVocacional() {
             <select className="w-full rounded-xl px-4 py-3 text-sm outline-none" style={selectStyle}
               value={form.entorno_laboral} onChange={e => actualizar('entorno_laboral', e.target.value)}>
               <option value="" style={{ background: '#0f1a3e' }}>¿Dónde te ves trabajando?</option>
-              {['Planta industrial y talleres especializados','Oficina o empresa de tecnología','Laboratorio de investigación','Mi propia empresa','Trabajo remoto desde casa'].map(o =>
+              {['Planta industrial y talleres especializados','Oficina o empresa de tecnología','Laboratorio de investigación','Mi propia empresa','Trabajo remoto desde casa','Campo y exteriores (parques solares o eólicos)'].map(o =>
                 <option key={o} style={{ background: '#0f1a3e' }}>{o}</option>)}
             </select>
             <textarea className="w-full rounded-xl px-4 py-3 text-sm text-white outline-none resize-none"

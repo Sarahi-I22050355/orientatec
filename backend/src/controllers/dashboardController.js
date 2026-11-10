@@ -6,18 +6,24 @@ const getEstadisticas = async (req, res) => {
     let municipios = [];
     let totalChats = 0;
 
-    try {
-        const resultado = await obtenerEstadisticas();
-        carreras = resultado.carreras;
-        municipios = resultado.municipios;
-    } catch (pgErr) {
-        console.warn('PostgreSQL no disponible:', pgErr.message);
+    // PostgreSQL y MongoDB se consultan en paralelo; si uno falla, el otro
+    // se muestra igual (mismo comportamiento que antes, pero más rápido).
+    const [pg, mongo] = await Promise.allSettled([
+        obtenerEstadisticas(),
+        Conversacion.estimatedDocumentCount(),
+    ]);
+
+    if (pg.status === 'fulfilled') {
+        carreras = pg.value.carreras;
+        municipios = pg.value.municipios;
+    } else {
+        console.warn('PostgreSQL no disponible:', pg.reason?.message);
     }
 
-    try {
-        totalChats = await Conversacion.countDocuments();
-    } catch (mongoErr) {
-        console.warn('MongoDB no disponible:', mongoErr.message);
+    if (mongo.status === 'fulfilled') {
+        totalChats = mongo.value;
+    } else {
+        console.warn('MongoDB no disponible:', mongo.reason?.message);
     }
 
     res.json({

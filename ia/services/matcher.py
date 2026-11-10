@@ -1,3 +1,5 @@
+import unicodedata
+
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 from models.schemas import PerfilAspirante, ResultadoCarrera
@@ -68,6 +70,13 @@ CARRERAS = {
     }
 }
 
+# ─── UTILIDADES ──────────────────────────────────────────────────────────────
+
+def _normalizar(texto: str) -> str:
+    """Minúsculas y sin acentos ("Tecnología" -> "tecnologia")."""
+    sin_acentos = unicodedata.normalize("NFKD", texto or "")
+    return "".join(c for c in sin_acentos if not unicodedata.combining(c)).lower()
+
 # ─── FUNCIÓN PRINCIPAL DE MATCH ───────────────────────────────────────────────
 
 def calcular_match(perfil: PerfilAspirante) -> list[ResultadoCarrera]:
@@ -104,8 +113,9 @@ def calcular_match(perfil: PerfilAspirante) -> list[ResultadoCarrera]:
             score += min(coincidencias_kw * 4, 20)
 
         # 5. Bonus por entorno laboral — hasta 10 puntos
-        entorno = perfil.entorno_laboral.lower() if perfil.entorno_laboral else ""
-        if any(e in entorno for e in carrera["entornos"]):
+        # Se compara sin acentos para que "tecnología" coincida con "tecnologia".
+        entorno = _normalizar(perfil.entorno_laboral)
+        if any(_normalizar(e) in entorno for e in carrera["entornos"]):
             score += 10
 
         # Normalizar a 100
