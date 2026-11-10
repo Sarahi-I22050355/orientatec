@@ -32,7 +32,6 @@ Responde con un tono cercano, como un amigo que sabe mucho, en el idioma en que 
 - Deportiva y cultural: del 25% al 100% según desempeño
 - Fallecimiento del padre: 50%
 - Beca de transporte: 40%
-- Empleados de AHMSA: 100%
 - Empleados de Seguridad Pública: 100%
 - De Dirección General: del 25% al 75% según desempeño
 
