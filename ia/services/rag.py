@@ -90,6 +90,40 @@ Materias destacadas: Fundamentos de gestión, Finanzas, Mercadotecnia, Plan de n
 Gestión de capital humano, Cadena de suministros, Simulación de negocios.
 Perfil: Negocios, liderazgo, finanzas, emprendimiento.
 
+INGENIERÍA MECATRÓNICA (9 semestres, plan IMCT-2010-229, 260 créditos) — carrera NUEVA en el ITSM
+Objetivo: formar profesionistas con capacidad analítica, crítica e innovadora para diseñar, proyectar,
+construir y administrar equipos y sistemas mecatrónicos en el sector social, productivo y de servicios;
+así como integrarlos, operarlos y mantenerlos, con ética, calidad y desarrollo sustentable.
+Perfil de ingreso: bases de bachillerato en matemáticas, física, química e inglés; razonamiento
+lógico-matemático y verbal; habilidad para las matemáticas, el español y las tecnologías de la información;
+valores para la convivencia social.
+Perfil de egreso: analiza, diseña, simula, construye e innova productos, procesos, equipos y sistemas
+mecatrónicos; instala, opera, optimiza, controla y mantiene sistemas que integran tecnologías mecánicas,
+eléctricas, electrónicas y computacionales; planifica, evalúa y administra proyectos industriales y sociales;
+coordina y dirige equipos multidisciplinarios; tiene liderazgo, comunicación y espíritu innovador y emprendedor;
+interpreta información técnica para transferir e innovar tecnologías de vanguardia; ejerce su profesión
+de forma legal y responsable conforme a normas nacionales e internacionales.
+Materias por semestre:
+- 1er semestre: Química, Cálculo Diferencial, Taller de Ética, Dibujo Asistido por Computadora,
+  Metrología y Normalización, Fundamentos de Investigación.
+- 2do semestre: Cálculo Integral, Álgebra Lineal, Ciencia e Ingeniería de Materiales, Programación Básica,
+  Estadística y Control de Calidad, Administración y Contabilidad.
+- 3er semestre: Cálculo Vectorial, Procesos de Fabricación, Electromagnetismo, Estática,
+  Métodos Numéricos, Desarrollo Sustentable.
+- 4to semestre: Ecuaciones Diferenciales, Fundamentos de Termodinámica, Mecánica de Materiales,
+  Dinámica, Análisis de Circuitos Eléctricos.
+- 5to semestre: Máquinas Eléctricas, Electrónica Analógica, Mecanismos, Análisis de Fluidos,
+  Taller de Investigación I.
+- 6to semestre: Electrónica de Potencia Aplicada, Instrumentación, Diseño de Elementos Mecánicos,
+  Electrónica Digital, Vibraciones Mecánicas, Taller de Investigación II.
+- 7mo semestre: Dinámica de Sistemas, Manufactura Avanzada, Circuitos Hidráulicos y Neumáticos,
+  Mantenimiento, Microcontroladores, Programación Avanzada.
+- 8vo semestre: Control, Formulación y Evaluación de Proyectos, Controladores Lógicos Programables (PLC).
+- 9no semestre: Robótica y Residencia Profesional.
+- Además: materias de especialidad (25 créditos), Servicio Social y Actividades Complementarias.
+  Si preguntan por la especialidad, indica que la define el campus y que consulten la página oficial.
+Perfil: Robótica, automatización, PLC, sistemas mecánicos + electrónicos + programación, manufactura avanzada.
+
 === EMPRESAS CON CONVENIO (residencias y prácticas) ===
 Productivo: AHMSA, IMSA, CFE, Denso Air Systems, Trinity Industries, Arca Continental,
 ACEROFRON, Grupo Industrial Monclova, Steel Fab de México, Manpower, METELMEX,
@@ -157,7 +191,9 @@ def detectar_inclinacion(texto: str) -> str | None:
         "Mecánica":                ["maquina", "motor", "mecanica", "taller", "piezas", "cad"],
         "Industrial":              ["procesos", "fabrica", "produccion", "logistica", "calidad"],
         "Energías Renovables":     ["solar", "eolica", "ambiente", "energia", "sustentable"],
-        "Gestión Empresarial":     ["empresa", "negocio", "liderar", "emprender", "finanzas"]
+        "Gestión Empresarial":     ["empresa", "negocio", "liderar", "emprender", "finanzas"],
+        # Va al final para no cambiar lo que ya detectaban las demás carreras.
+        "Mecatrónica":             ["mecatronica", "mecatrónica", "robot", "plc", "neumatica", "hidraulica", "servomotor"]
     }
     for carrera, palabras in señales.items():
         if sum(1 for p in palabras if p in texto) >= 2:

@@ -13,7 +13,7 @@ from services.matcher import CARRERAS, calcular_match, _normalizar
 # Opciones exactas del select "¿Dónde te ves trabajando?" del frontend
 # (frontend/src/pages/TestVocacional.jsx) y carreras que deben recibir el bonus.
 OPCIONES_ENTORNO = {
-    "Planta industrial y talleres especializados": {"ING_INDUSTRIAL", "ING_ELECTRONICA", "ING_MECANICA"},
+    "Planta industrial y talleres especializados": {"ING_INDUSTRIAL", "ING_ELECTRONICA", "ING_MECANICA", "ING_MECATRONICA"},
     "Oficina o empresa de tecnología": {"ING_INFORMATICA", "ING_GESTION"},
     "Laboratorio de investigación": {"ING_ELECTRONICA"},
     "Mi propia empresa": {"ING_GESTION"},
@@ -87,6 +87,16 @@ class TestCalcularMatch(unittest.TestCase):
             entorno_laboral="Trabajo remoto desde casa"))
         self.assertEqual(res[0].carrera_id, "ING_INFORMATICA")
         self.assertEqual(res[0].porcentaje_match, 77.9)
+
+    def test_perfil_mecatronico_obtiene_mecatronica(self):
+        res = calcular_match(perfil(
+            materias_favoritas=["Física", "Programación"],
+            pasatiempos=["Armar circuitos", "Diseñar piezas"],
+            habilidad_logica=90, habilidad_diseno=75, habilidad_liderazgo=50, habilidad_manual=85,
+            entorno_laboral="Planta industrial y talleres especializados",
+            texto_libre="Me gustaria construir un robot y programar un PLC"))
+        self.assertEqual(res[0].carrera_id, "ING_MECATRONICA")
+        self.assertEqual(res[0].nombre_carrera, "Ingeniería Mecatrónica")
 
 
 if __name__ == "__main__":

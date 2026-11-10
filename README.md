@@ -135,6 +135,7 @@ cd frontend && npm run lint && npm run build
 | Ingeniería en Mecánica | Manufactura |
 | Ingeniería en Energías Renovables | Sustentabilidad |
 | Ingeniería en Gestión Empresarial | Negocios |
+| Ingeniería Mecatrónica | Robótica y automatización |
 
 ---
 
