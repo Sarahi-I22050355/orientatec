@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { memo, useEffect, useRef } from 'react';
 
 function Mensaje({ msg }) {
   const esUsuario = msg.role === 'user';
@@ -14,7 +14,7 @@ function Mensaje({ msg }) {
       el.style.opacity = '1';
       el.style.transform = 'translateX(0)';
     });
-  }, []);
+  }, [esUsuario]);
 
   return (
     <div ref={ref} className={`flex ${esUsuario ? 'justify-end' : 'justify-start'}`}>
@@ -37,4 +37,6 @@ function Mensaje({ msg }) {
   );
 }
 
-export default Mensaje;
+// memo: mientras se "escribe" la última respuesta solo se vuelve a dibujar ese
+// mensaje, no toda la conversación.
+export default memo(Mensaje);
