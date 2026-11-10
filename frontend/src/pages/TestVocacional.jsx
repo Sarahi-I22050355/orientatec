@@ -60,6 +60,16 @@ const EMPRESAS_POR_CARRERA = {
     { nombre: 'Presidencia Municipal de Monclova', sector: 'Público' },
     { nombre: 'Monclova Country Club A.C.', sector: 'Social' },
   ],
+  ING_MECATRONICA: [
+    { nombre: 'AHMSA', sector: 'Productivo' },
+    { nombre: 'IMSA', sector: 'Productivo' },
+    { nombre: 'Denso Air Systems de México', sector: 'Productivo' },
+    { nombre: 'FCA FASEMEX Enterprise', sector: 'Productivo' },
+    { nombre: 'Steel Fab de México', sector: 'Productivo' },
+    { nombre: 'Trinity Industries de México', sector: 'Productivo' },
+    { nombre: 'Cyclonova S.A. de C.V.', sector: 'Productivo' },
+    { nombre: 'Comisión Federal de Electricidad', sector: 'Productivo' },
+  ],
 };
 
 const COLORES_SECTOR = {
