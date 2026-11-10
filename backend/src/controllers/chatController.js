@@ -4,7 +4,7 @@ const Conversacion = require('../models/Conversacion');
 const MAX_MENSAJE = 4000;
 
 const enviarMensaje = async (req, res) => {
-    const { mensaje, historial = [], sesion_id } = req.body || {};
+    const { mensaje, historial = [], sesion_id, idioma } = req.body || {};
 
     // Validación de entrada. sesion_id debe ser texto: si llegara un objeto
     // (por ejemplo {"$ne": null}) MongoDB lo interpretaría como un operador
@@ -19,10 +19,13 @@ const enviarMensaje = async (req, res) => {
         return res.status(400).json({ error: 'Sesión inválida' });
     }
 
+    // Idioma del sitio ('es' o 'en'); cualquier otro valor se ignora.
+    const idiomaSitio = idioma === 'en' ? 'en' : 'es';
+
     let data;
     try {
         // Llamar al chatbot IA
-        ({ data } = await iaClient.post('/chat/mensaje', { mensaje, historial }));
+        ({ data } = await iaClient.post('/chat/mensaje', { mensaje, historial, idioma: idiomaSitio }));
     } catch (err) {
         console.error('Error chat:', err.message);
         if (err.response?.status === 422) {
