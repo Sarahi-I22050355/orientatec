@@ -18,7 +18,6 @@ const crearTabla = async () => {
             fecha TIMESTAMP DEFAULT NOW()
         )
     `);
-    console.log('✅ Tabla aspirantes lista');
 };
 
 const guardarAspirante = async (datos) => {
