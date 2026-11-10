@@ -125,7 +125,7 @@ Materias por semestre:
 Perfil: Robótica, automatización, PLC, sistemas mecánicos + electrónicos + programación, manufactura avanzada.
 
 === EMPRESAS CON CONVENIO (residencias y prácticas) ===
-Productivo: AHMSA, IMSA, CFE, Denso Air Systems, Trinity Industries, Arca Continental,
+Productivo: IMSA, CFE, Denso Air Systems, Trinity Industries, Arca Continental,
 ACEROFRON, Grupo Industrial Monclova, Steel Fab de México, Manpower, METELMEX,
 Grupo FOX, Cyclonova, FCA FASEMEX, GCORP, entre más de 80 empresas.
 Servicios: CAISS, Hospital Sainte Marie, Sistemas Evolución, COEL del Norte.

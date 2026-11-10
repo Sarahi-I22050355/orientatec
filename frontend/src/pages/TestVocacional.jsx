@@ -13,7 +13,6 @@ const EMPRESAS_POR_CARRERA = {
     { nombre: 'Corporación Mexicana de Investigación en Materiales', sector: 'Servicios' },
   ],
   ING_ELECTRONICA: [
-    { nombre: 'AHMSA', sector: 'Productivo' },
     { nombre: 'Comisión Federal de Electricidad', sector: 'Productivo' },
     { nombre: 'Denso Air Systems de México', sector: 'Productivo' },
     { nombre: 'Steel Fab de México', sector: 'Productivo' },
@@ -23,7 +22,6 @@ const EMPRESAS_POR_CARRERA = {
     { nombre: 'IMSA', sector: 'Productivo' },
   ],
   ING_INDUSTRIAL: [
-    { nombre: 'AHMSA', sector: 'Productivo' },
     { nombre: 'Trinity Industries de México', sector: 'Productivo' },
     { nombre: 'Arca Continental', sector: 'Productivo' },
     { nombre: 'Aramark Monclova Manufacturing', sector: 'Productivo' },
@@ -33,7 +31,6 @@ const EMPRESAS_POR_CARRERA = {
     { nombre: 'Promotora de Manufacturas', sector: 'Productivo' },
   ],
   ING_MECANICA: [
-    { nombre: 'AHMSA', sector: 'Productivo' },
     { nombre: 'IMSA', sector: 'Productivo' },
     { nombre: 'Montajes Frontera S.A. de C.V.', sector: 'Productivo' },
     { nombre: 'Industrias Metálicas de Monclova', sector: 'Productivo' },
@@ -61,7 +58,6 @@ const EMPRESAS_POR_CARRERA = {
     { nombre: 'Monclova Country Club A.C.', sector: 'Social' },
   ],
   ING_MECATRONICA: [
-    { nombre: 'AHMSA', sector: 'Productivo' },
     { nombre: 'IMSA', sector: 'Productivo' },
     { nombre: 'Denso Air Systems de México', sector: 'Productivo' },
     { nombre: 'FCA FASEMEX Enterprise', sector: 'Productivo' },
