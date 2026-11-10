@@ -106,9 +106,22 @@ uvicorn main:app --host 0.0.0.0 --port 8000
 ```bash
 cd frontend
 npm install
-echo "VITE_API_URL=http://localhost:4000/api" > .env.local
+cp .env.example .env.local   # opcional: VITE_PROXY_TARGET=http://localhost:4000
 npm run dev
 ```
+
+> Por defecto `npm run dev` redirige `/api` al servidor de producción. Para no mezclar datos de prueba con datos reales, define `VITE_PROXY_TARGET=http://localhost:4000` en `frontend/.env.local`.
+
+### Pruebas
+```bash
+# Algoritmo del test vocacional
+cd ia && python -m unittest discover -s tests -v
+
+# Lint y build del frontend
+cd frontend && npm run lint && npm run build
+```
+
+> Los archivos `.env` nunca se suben al repositorio; cada carpeta tiene un `.env.example` con las variables necesarias.
 
 ---
 

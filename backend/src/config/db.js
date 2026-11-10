@@ -9,8 +9,16 @@ const pool = new Pool({
     password: process.env.DB_PASSWORD,
 });
 
+// Prueba de conexión al arrancar. Se libera el cliente para devolverlo al pool
+// (antes se quedaba apartado para siempre y el pool tenía una conexión menos).
 pool.connect()
-    .then(() => console.log('✅ PostgreSQL conectado'))
+    .then(client => {
+        client.release();
+        console.log('✅ PostgreSQL conectado');
+    })
     .catch(err => console.error('❌ Error PostgreSQL:', err.message));
+
+// Evita que un error en una conexión inactiva tumbe el proceso.
+pool.on('error', err => console.error('❌ Error PostgreSQL (pool):', err.message));
 
 module.exports = pool;
