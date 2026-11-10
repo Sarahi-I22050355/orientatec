@@ -116,7 +116,7 @@ function Home() {
         {/* Stats bar */}
         <div className="mt-16 flex flex-wrap justify-center gap-x-16 gap-y-6 text-center">
           {[
-            { num: '6', label: 'Carreras de ingeniería' },
+            { num: '7', label: 'Carreras de ingeniería' },
             { num: 'IA', label: 'Orientación personalizada' },
             { num: '100%', label: 'Gratuito' },
           ].map(({ num, label }) => (

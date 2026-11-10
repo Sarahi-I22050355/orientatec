@@ -8,6 +8,7 @@ const CARRERAS_BASE = [
   'Ingeniería en Mecánica',
   'Ingeniería en Energías Renovables',
   'Ingeniería en Gestión Empresarial',
+  'Ingeniería Mecatrónica',
 ];
 
 function Dashboard() {
@@ -130,7 +131,7 @@ function Dashboard() {
               <div className="space-y-5">
                 {carrerasMerged.map((c, i) => {
                   const pct = c.promedio_match;
-                  const colores = ['#2563eb', '#7c3aed', '#d97706', '#059669', '#0891b2', '#dc2626'];
+                  const colores = ['#2563eb', '#7c3aed', '#d97706', '#059669', '#0891b2', '#dc2626', '#db2777'];
                   return (
                     <div key={i}>
                       <div className="flex justify-between text-sm mb-2">
