@@ -1,7 +1,9 @@
 import { useRef, useEffect, useState } from 'react';
 import Mensaje from './Mensaje';
+import { useIdioma } from '../../i18n/contexto';
 
 function ChatBox({ mensajes, cargando, input, setInput, onEnviar, mostrarSugerencias, sugerencias, onSugerencia }) {
+  const { t } = useIdioma();
   const bottomRef = useRef(null);
   const scrollRef = useRef(null);
   const [mostrarBotonScroll, setMostrarBotonScroll] = useState(false);
@@ -67,6 +69,7 @@ function ChatBox({ mensajes, cargando, input, setInput, onEnviar, mostrarSugeren
         {mostrarBotonScroll && (
           <button
             onClick={irAlFondo}
+            aria-label={t.chat.irAlFondo}
             className="absolute bottom-4 right-4 w-9 h-9 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-200 hover:opacity-90 border border-white/10"
             style={{ background: 'linear-gradient(135deg, #3b82f6, #7c3aed)' }}
           >
@@ -81,7 +84,7 @@ function ChatBox({ mensajes, cargando, input, setInput, onEnviar, mostrarSugeren
           <input
             className="flex-1 rounded-full px-5 py-2.5 text-sm text-white outline-none border border-white/15 focus:border-blue-500/60 transition-colors"
             style={{ background: 'rgba(255,255,255,0.06)' }}
-            placeholder="Escribe tu mensaje..."
+            placeholder={t.chat.placeholder}
             maxLength={4000}
             value={input}
             onChange={e => setInput(e.target.value)}
@@ -90,7 +93,7 @@ function ChatBox({ mensajes, cargando, input, setInput, onEnviar, mostrarSugeren
           <button onClick={() => onEnviar()} disabled={cargando}
             className="rounded-full px-5 py-2.5 text-sm font-medium text-white transition-all duration-200 hover:opacity-90 disabled:opacity-40"
             style={{ background: 'linear-gradient(135deg, #3b82f6, #7c3aed)' }}>
-            Enviar
+            {t.chat.enviar}
           </button>
         </div>
       </div>
