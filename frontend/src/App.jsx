@@ -39,7 +39,7 @@ function App() {
       <div className="flex flex-col h-screen overflow-hidden">
         <nav className="bg-blue-950 text-white px-6 py-4 border-b border-blue-800 sticky top-0 z-50 shrink-0">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-            <a href="https://tecmonclova.com/sitio/" target="_blank" rel="noopener noreferrer">
+            <a href="https://tecmonclova.com/web/" target="_blank" rel="noopener noreferrer">
               {/* Versión del logo al tamaño en que se muestra (10 KB en vez de 24 KB). */}
               <img src="/logo_tecnm_nav.png" alt="TecNM Campus Monclova" width="114" height="48" className="h-12 w-auto object-contain hover:opacity-80 transition-opacity duration-200" />
             </a>
