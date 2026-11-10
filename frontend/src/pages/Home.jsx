@@ -1,7 +1,9 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useIdioma } from '../i18n/contexto';
 
 function Home() {
+  const { t } = useIdioma();
 
   useEffect(() => {
     fetch('/robot.lottie').catch(() => {});
@@ -51,7 +53,7 @@ function Home() {
         {/* Badge */}
         <div className="inline-flex items-center gap-2 border border-white/10 bg-white/5 backdrop-blur-sm rounded-full px-4 py-1.5 text-xs text-blue-300 mb-8 tracking-wide">
           <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse inline-block" />
-          TecNM Campus Monclova · IA disponible
+          {t.home.badge}
         </div>
 
         {/* Title */}
@@ -71,11 +73,11 @@ function Home() {
 
         {/* Tagline */}
         <p className="text-lg sm:text-xl text-white/90 max-w-md mx-auto mb-4 leading-relaxed font-medium">
-          Descubre qué carrera va contigo <br className="hidden sm:block" />
-          con ayuda de inteligencia artificial.
+          {t.home.lema1} <br className="hidden sm:block" />
+          {t.home.lema2}
         </p>
         <p className="text-sm text-blue-300/80 mb-16 font-medium tracking-wide">
-          Hecho para futuros ingenieros del ITSM.
+          {t.home.sublema}
         </p>
         {/* CTA Cards */}
         <div className="w-full max-w-2xl flex flex-col sm:flex-row gap-4">
@@ -87,12 +89,12 @@ function Home() {
             style={{ background: 'rgba(13, 21, 38, 0.25)' }}
           >
             <div className="w-11 h-11 rounded-xl bg-blue-500/15 flex items-center justify-center mb-5 text-2xl">🤖</div>
-            <h2 className="text-xl font-semibold text-white mb-2">Habla con OrientaTec</h2>
+            <h2 className="text-xl font-semibold text-white mb-2">{t.home.chatTitulo}</h2>
             <p className="text-sm text-slate-400 leading-relaxed mb-6">
-              Platica con el asistente y descubre qué carrera encaja con tus intereses.
+              {t.home.chatTexto}
             </p>
             <span className="mt-auto text-blue-400 text-sm font-medium group-hover:translate-x-1 transition-transform duration-200 inline-block">
-              Empezar conversación →
+              {t.home.chatBoton}
             </span>
           </Link>
 
@@ -103,23 +105,19 @@ function Home() {
             style={{ background: 'rgba(10, 15, 30, 0.25)' }}
           >
             <div className="w-11 h-11 rounded-xl bg-purple-500/15 flex items-center justify-center mb-5 text-2xl">📊</div>
-            <h2 className="text-xl font-semibold text-white mb-2">Test Vocacional</h2>
+            <h2 className="text-xl font-semibold text-white mb-2">{t.home.testTitulo}</h2>
             <p className="text-sm text-slate-400 leading-relaxed mb-6">
-              Responde el test y obtén tu porcentaje de afinidad con cada ingeniería del ITSM.
+              {t.home.testTexto}
             </p>
             <span className="mt-auto text-purple-400 text-sm font-medium group-hover:translate-x-1 transition-transform duration-200 inline-block">
-              Hacer el test →
+              {t.home.testBoton}
             </span>
           </Link>
 
         </div>
         {/* Stats bar */}
         <div className="mt-16 flex flex-wrap justify-center gap-x-16 gap-y-6 text-center">
-          {[
-            { num: '7', label: 'Carreras de ingeniería' },
-            { num: 'IA', label: 'Orientación personalizada' },
-            { num: '100%', label: 'Gratuito' },
-          ].map(({ num, label }) => (
+          {t.home.stats.map(({ num, label }) => (
             <div key={label} className="flex flex-col items-center">
               <span className="text-5xl font-extrabold text-white">{num}</span>
               <span className="text-sm text-slate-200 mt-1">{label}</span>
@@ -130,7 +128,7 @@ function Home() {
 
       {/* Footer */}
       <footer className="relative text-center py-4 text-xs text-slate-400 bg-black border-t border-white/10">
-        © 2026 Hackaton TecNM Campus Monclova — Jabalí Digital
+        {t.home.footer}
       </footer>
     </div>
   );
