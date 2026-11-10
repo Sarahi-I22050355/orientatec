@@ -4,8 +4,11 @@ from services.rag import chat_con_orientatec
 
 router = APIRouter(prefix="/chat", tags=["Chatbot OrientaTec"])
 
+# Función normal (sin async): la llamada a Gemini es bloqueante y así FastAPI la
+# ejecuta en un hilo aparte. Con "async def" cada conversación bloqueaba el
+# servidor y los demás usuarios (chat y test) esperaban su turno.
 @router.post("/mensaje", response_model=RespuestaChat)
-async def enviar_mensaje(data: MensajeChat):
+def enviar_mensaje(data: MensajeChat):
     resultado = chat_con_orientatec(data.mensaje, data.historial)
     return RespuestaChat(
         respuesta=resultado["respuesta"],

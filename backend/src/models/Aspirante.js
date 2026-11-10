@@ -28,7 +28,7 @@ const guardarAspirante = async (datos) => {
          carrera_match2, porcentaje_match2,
          carrera_match3, porcentaje_match3)
         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
-        RETURNING *`,
+        RETURNING id`,
         [
             datos.nombre,
             datos.bachillerato,
@@ -46,13 +46,15 @@ const guardarAspirante = async (datos) => {
 };
 
 const obtenerEstadisticas = async () => {
-    const { rows } = await pool.query(
-        'SELECT carrera_match1 as carrera, COUNT(*) as total, ROUND(AVG(porcentaje_match1)::numeric, 1) as promedio_match FROM aspirantes WHERE carrera_match1 IS NOT NULL GROUP BY carrera_match1 ORDER BY total DESC'
-    );
-
-    const { rows: municipios } = await pool.query(
-        'SELECT LOWER(TRIM(municipio)) as municipio, COUNT(*) as total FROM aspirantes WHERE municipio IS NOT NULL AND municipio != \'\' GROUP BY LOWER(TRIM(municipio)) ORDER BY total DESC'
-    );
+    // Las dos consultas son independientes: se ejecutan en paralelo.
+    const [{ rows }, { rows: municipios }] = await Promise.all([
+        pool.query(
+            'SELECT carrera_match1 as carrera, COUNT(*) as total, ROUND(AVG(porcentaje_match1)::numeric, 1) as promedio_match FROM aspirantes WHERE carrera_match1 IS NOT NULL GROUP BY carrera_match1 ORDER BY total DESC'
+        ),
+        pool.query(
+            'SELECT LOWER(TRIM(municipio)) as municipio, COUNT(*) as total FROM aspirantes WHERE municipio IS NOT NULL AND municipio != \'\' GROUP BY LOWER(TRIM(municipio)) ORDER BY total DESC'
+        ),
+    ]);
 
     return { carreras: rows, municipios };
 };
