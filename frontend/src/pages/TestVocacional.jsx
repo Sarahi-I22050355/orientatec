@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { matchVocacional } from '../api';
 import { useIdioma } from '../i18n/contexto';
 import { CARRERAS_EN } from '../i18n/textos';
+import FondoPuntos from '../components/FondoPuntos';
 
 const EMPRESAS_POR_CARRERA = {
   ING_INFORMATICA: [
@@ -175,8 +176,7 @@ function TestVocacional() {
     <div className="min-h-screen flex flex-col items-center px-4 py-10"
       style={{ background: 'linear-gradient(135deg, #0a0f2e 0%, #0f1a3e 40%, #1a0a2e 100%)' }}>
 
-      <div className="fixed inset-0 pointer-events-none"
-        style={{ backgroundImage: 'radial-gradient(circle, #ffffff0d 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
+      <FondoPuntos />
 
       <div className="relative z-10 w-full max-w-xl">
 

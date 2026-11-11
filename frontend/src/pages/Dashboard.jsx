@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { getEstadisticas } from '../api';
 import { useIdioma } from '../i18n/contexto';
+import FondoPuntos from '../components/FondoPuntos';
 
 const CARRERAS_BASE = [
   'Ingeniería en Informática',
@@ -61,8 +62,7 @@ function Dashboard() {
       style={{ background: 'linear-gradient(135deg, #0a0f2e 0%, #0f1a3e 40%, #1a0a2e 100%)' }}>
 
       {/* Fondo punteado */}
-      <div className="fixed inset-0 pointer-events-none"
-        style={{ backgroundImage: 'radial-gradient(circle, #ffffff0d 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
+      <FondoPuntos />
 
       <div className="relative max-w-5xl mx-auto">
 
