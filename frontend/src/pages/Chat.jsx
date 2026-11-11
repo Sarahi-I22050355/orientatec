@@ -3,6 +3,7 @@ import { DotLottie } from '@lottiefiles/dotlottie-web';
 import { enviarMensaje } from '../api';
 import ChatBox from '../components/chat/ChatBox';
 import { useIdioma } from '../i18n/contexto';
+import FondoPuntos from '../components/FondoPuntos';
 
 const SEGMENTOS = {
   IDLE:     [0, 30],
@@ -180,8 +181,7 @@ function Chat() {
       <div className="flex flex-col h-full overflow-hidden"
       style={{ background: 'linear-gradient(135deg, #0a0f2e 0%, #0f1a3e 40%, #1a0a2e 100%)' }}>
 
-      <div className="absolute inset-0 pointer-events-none"
-        style={{ backgroundImage: 'radial-gradient(circle, #ffffff0d 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
+      <FondoPuntos posicion="absolute" />
 
       {/* Header */}
       <div className="relative z-10 px-6 py-4 border-b border-white/10 flex items-center gap-3 shrink-0"

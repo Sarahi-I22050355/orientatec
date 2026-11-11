@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useIdioma } from '../i18n/contexto';
+import FondoPuntos from '../components/FondoPuntos';
 
 function Home() {
   const { t } = useIdioma();
@@ -12,13 +13,7 @@ function Home() {
   return (
       <div className="min-h-screen text-white flex flex-col overflow-x-hidden" style={{ background: 'linear-gradient(135deg, #0a0f2e 0%, #0f1a3e 40%, #1a0a2e 100%)' }}>
       {/* Dot grid background */}
-      <div
-        className="fixed inset-0 pointer-events-none"
-        style={{
-          backgroundImage: 'radial-gradient(circle, #ffffff0d 1px, transparent 1px)',
-          backgroundSize: '28px 28px',
-        }}
-      />
+      <FondoPuntos />
 
         {/* Glow blobs */}
         <div className="fixed top-[-200px] left-[-200px] w-[600px] h-[600px] rounded-full pointer-events-none"
@@ -27,7 +22,7 @@ function Home() {
           style={{ background: 'radial-gradient(circle, #7c3aed18 0%, transparent 70%)' }} />
 
         {/* Logo decorativo de fondo */}
-        <div className="fixed left-[-280px] top-1/2 -translate-y-1/2 pointer-events-none z-0">
+        <div className="fixed left-[-280px] top-[55%] -translate-y-1/2 pointer-events-none z-0">
           <div className="relative w-[700px] h-[700px]">
             {/* Engranaje girando */}
             <img
