@@ -17,6 +17,8 @@ class PerfilAspirante(BaseModel):
     entorno_laboral: str = Field(max_length=200)
     prioridad_profesional: str = Field(max_length=200)
     texto_libre: Optional[str] = Field(None, max_length=3000)  # Respuesta abierta
+    # Preguntas de situación: {pregunta: carrera_id de la opción elegida}
+    situaciones: dict[str, str] = Field(default_factory=dict, max_length=10)
 
 # ─── RESULTADO DEL MATCH VOCACIONAL ──────────────────────────────────────────
 

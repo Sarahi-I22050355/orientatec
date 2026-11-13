@@ -118,7 +118,8 @@ function TestVocacional() {
     habilidad_logica: 50, habilidad_diseno: 50,
     habilidad_liderazgo: 50, habilidad_manual: 50,
     entorno_laboral: '', prioridad_profesional: '',
-    texto_libre: ''
+    texto_libre: '',
+    situaciones: {}
   });
   const [resultado, setResultado] = useState(null);
   const [cargando, setCargando] = useState(false);
@@ -133,6 +134,12 @@ function TestVocacional() {
         : [...f[campo], valor]
     }));
   };
+
+  const responderSituacion = (pregunta, carreraId) =>
+    setForm(f => ({ ...f, situaciones: { ...f.situaciones, [pregunta]: carreraId } }));
+  // Las preguntas de situación son las que mejor separan Mecatrónica de
+  // Electrónica y Mecánica, por eso se piden todas antes de ver el resultado.
+  const situacionesCompletas = t.test.situaciones.every(s => form.situaciones[s.id]);
 
   const enviar = async () => {
     setCargando(true);
@@ -159,7 +166,7 @@ function TestVocacional() {
   };
 
   const materias = ['Matemáticas', 'Física', 'Química', 'Programación', 'Dibujo Técnico', 'Liderazgo'];
-  const hobbies = ['Armar circuitos', 'Programar', 'Diseñar piezas', 'Organizar equipos', 'Cuidar el ambiente', 'Reparar aparatos'];
+  const hobbies = ['Armar circuitos', 'Programar', 'Diseñar piezas', 'Organizar equipos', 'Cuidar el ambiente', 'Reparar aparatos', 'Construir robots o drones'];
 
   const selectStyle = {
     background: 'rgba(255,255,255,0.06)',
@@ -299,13 +306,28 @@ function TestVocacional() {
               {['Planta industrial y talleres especializados','Oficina o empresa de tecnología','Laboratorio de investigación','Mi propia empresa','Trabajo remoto desde casa','Campo y exteriores (parques solares o eólicos)'].map(o =>
                 <option key={o} value={o} style={{ background: '#0f1a3e' }}>{etiqueta(o)}</option>)}
             </select>
+            <div className="space-y-3">
+              <p className="text-sm font-medium text-white/70">{t.test.situacionesTitulo}</p>
+              {t.test.situaciones.map(s => (
+                <div key={s.id}>
+                  <p className="text-sm text-white/80 mb-2">{s.pregunta}</p>
+                  <select className="w-full rounded-xl px-4 py-3 text-sm outline-none" style={selectStyle}
+                    value={form.situaciones[s.id] || ''} onChange={e => responderSituacion(s.id, e.target.value)}>
+                    <option value="" style={{ background: '#0f1a3e' }}>{t.test.eligeOpcion}</option>
+                    {s.opciones.map(([carreraId, texto]) =>
+                      <option key={carreraId} value={carreraId} style={{ background: '#0f1a3e' }}>{texto}</option>)}
+                  </select>
+                </div>
+              ))}
+            </div>
+
             <textarea className="w-full rounded-xl px-4 py-3 text-sm text-white outline-none resize-none"
               style={{ ...selectStyle, minHeight: '80px' }}
               placeholder={t.test.textoLibre}
               value={form.texto_libre} onChange={e => actualizar('texto_libre', e.target.value)} />
             <div className="flex gap-2">
               <button onClick={() => setPaso(2)} className="flex-1 py-3 rounded-xl text-sm font-medium text-white/70 border border-white/20 hover:border-white/40 transition-colors">{t.test.atras}</button>
-              <button onClick={enviar} disabled={cargando || !form.entorno_laboral}
+              <button onClick={enviar} disabled={cargando || !form.entorno_laboral || !situacionesCompletas}
                 className="flex-1 py-3 rounded-xl text-sm font-medium text-white transition-all hover:opacity-90 disabled:opacity-40"
                 style={{ background: 'linear-gradient(135deg, #3b82f6, #7c3aed)' }}>
                 {cargando ? t.test.analizando : t.test.verResultado}
@@ -414,7 +436,7 @@ function TestVocacional() {
 
               <button onClick={() => {
                 setPaso(1); setResultado(null); setCarruselIdx(0);
-                setForm({ bachillerato_origen: '', municipio: '', materias_favoritas: [], pasatiempos: [], habilidad_logica: 50, habilidad_diseno: 50, habilidad_liderazgo: 50, habilidad_manual: 50, entorno_laboral: '', prioridad_profesional: '', texto_libre: '' });
+                setForm({ bachillerato_origen: '', municipio: '', materias_favoritas: [], pasatiempos: [], habilidad_logica: 50, habilidad_diseno: 50, habilidad_liderazgo: 50, habilidad_manual: 50, entorno_laboral: '', prioridad_profesional: '', texto_libre: '', situaciones: {} });
               }} className="w-full py-3 rounded-xl text-sm font-medium text-white/70 border border-white/20 hover:border-white/40 transition-colors">
                 {t.test.repetir}
               </button>

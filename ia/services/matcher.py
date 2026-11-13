@@ -1,3 +1,4 @@
+import re
 import unicodedata
 
 from sklearn.metrics.pairwise import cosine_similarity
@@ -31,7 +32,7 @@ CARRERAS = {
     "ING_ELECTRONICA": {
         "nombre": "Ingeniería en Electrónica",
         "vector": [90, 65, 40, 85],
-        "keywords": ["circuitos", "electronica", "electricidad", "sensores", "automatizacion", "control", "robotica", "instrumentacion", "microcontrolador", "arduino", "raspberry"],
+        "keywords": ["circuito", "electronica", "electricidad", "sensor", "control", "instrumentacion", "microcontrolador", "arduino", "raspberry", "tarjeta", "chip", "telecomunicaciones", "aparato"],
         "materias": ["Física", "Matemáticas"],
         "pasatiempos": ["Armar circuitos", "Reparar aparatos"],
         "entornos": ["laboratorio", "planta", "taller"],
@@ -71,13 +72,28 @@ CARRERAS = {
     "ING_MECATRONICA": {
         "nombre": "Ingeniería Mecatrónica",
         "vector": [90, 75, 50, 85],
-        "keywords": ["mecatronica", "mecatrónica", "robot", "brazo robotico", "plc", "automata", "servomotor", "neumatica", "hidraulica", "mecanismos", "cnc", "impresion 3d", "drones", "manufactura avanzada"],
+        "keywords": ["mecatronica", "robot", "robotica", "roboticos", "automatizar", "automatizacion", "plc", "automata", "servomotor", "neumatica", "hidraulica", "mecanismo", "cnc", "impresion 3d", "impresora 3d", "dron", "manufactura avanzada", "seguidor de linea", "que se muevan"],
         "materias": ["Física", "Programación"],
-        "pasatiempos": ["Armar circuitos", "Diseñar piezas"],
+        "pasatiempos": ["Construir robots o drones", "Armar circuitos", "Diseñar piezas"],
         "entornos": ["planta", "taller"],
         "razonamiento": "Tu combinación de lógica, habilidad manual y gusto por la tecnología encaja con la mecatrónica: integrar mecánica, electrónica y programación para diseñar, construir y mantener robots y sistemas automatizados que necesita la industria de la región.",
         "accion": "Invitarte a conocer el Laboratorio de ingeniería y tecnología del campus."
     }
+}
+
+# ─── PREGUNTAS DE SITUACIÓN ──────────────────────────────────────────────────
+# Cada pregunta tiene una opción por carrera; el frontend manda el carrera_id
+# de la opción elegida.
+PREGUNTAS_SITUACION = ("robot", "falla", "proyecto")
+PUNTOS_SITUACION = 8
+BONUS_INTEGRACION = 5
+
+# Áreas que integra Mecatrónica: si el aspirante muestra interés en varias a la
+# vez (y no solo en una), es la señal más clara de perfil mecatrónico.
+AREAS_MECATRONICA = {
+    "mecanica":     {"Diseñar piezas", "Dibujo Técnico"},
+    "electronica":  {"Armar circuitos"},
+    "programacion": {"Programar", "Programación"},
 }
 
 # ─── UTILIDADES ──────────────────────────────────────────────────────────────
@@ -86,6 +102,17 @@ def _normalizar(texto: str) -> str:
     """Minúsculas y sin acentos ("Tecnología" -> "tecnologia")."""
     sin_acentos = unicodedata.normalize("NFKD", texto or "")
     return "".join(c for c in sin_acentos if not unicodedata.combining(c)).lower()
+
+def _contar_keywords(texto: str, keywords: list[str]) -> int:
+    """Cuenta keywords como palabras completas (admite plural), sin acentos.
+    Antes "ia" coincidía dentro de "me gustaría" y "cad" dentro de "cada"."""
+    return sum(1 for kw in keywords
+               if re.search(rf"\b{re.escape(_normalizar(kw))}(s|es)?\b", texto))
+
+
+def _areas_mecatronica(perfil: PerfilAspirante) -> int:
+    elegidos = set(perfil.materias_favoritas or []) | set(perfil.pasatiempos or [])
+    return sum(1 for opciones in AREAS_MECATRONICA.values() if elegidos & opciones)
 
 # ─── FUNCIÓN PRINCIPAL DE MATCH ───────────────────────────────────────────────
 
@@ -118,8 +145,8 @@ def calcular_match(perfil: PerfilAspirante) -> list[ResultadoCarrera]:
 
         # 4. Bonus por keywords en texto libre — hasta 20 puntos
         if perfil.texto_libre:
-            texto = perfil.texto_libre.lower()
-            coincidencias_kw = sum(1 for kw in carrera["keywords"] if kw in texto)
+            texto = _normalizar(perfil.texto_libre)
+            coincidencias_kw = _contar_keywords(texto, carrera["keywords"])
             score += min(coincidencias_kw * 4, 20)
 
         # 5. Bonus por entorno laboral — hasta 10 puntos
@@ -127,6 +154,17 @@ def calcular_match(perfil: PerfilAspirante) -> list[ResultadoCarrera]:
         entorno = _normalizar(perfil.entorno_laboral)
         if any(_normalizar(e) in entorno for e in carrera["entornos"]):
             score += 10
+
+        # 6. Preguntas de situación — 8 puntos por cada respuesta (hasta 24)
+        situaciones = perfil.situaciones or {}
+        score += PUNTOS_SITUACION * sum(1 for q in PREGUNTAS_SITUACION
+                                        if situaciones.get(q) == carrera_id)
+
+        # 7. Bonus de integración (solo Mecatrónica) — hasta BONUS_INTEGRACION
+        if carrera_id == "ING_MECATRONICA":
+            areas = _areas_mecatronica(perfil)
+            if areas >= 2:
+                score += BONUS_INTEGRACION * (areas - 1) / 2
 
         # Normalizar a 100
         score = min(round(score, 1), 100.0)

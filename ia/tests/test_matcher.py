@@ -8,7 +8,8 @@ import unittest
 from pathlib import Path
 
 from models.schemas import PerfilAspirante
-from services.matcher import CARRERAS, calcular_match, _normalizar
+from services.matcher import (CARRERAS, PREGUNTAS_SITUACION, calcular_match,
+                              _contar_keywords, _normalizar)
 
 # Opciones exactas del select "¿Dónde te ves trabajando?" del frontend
 # (frontend/src/pages/TestVocacional.jsx) y carreras que deben recibir el bonus.
@@ -97,6 +98,70 @@ class TestCalcularMatch(unittest.TestCase):
             texto_libre="Me gustaria construir un robot y programar un PLC"))
         self.assertEqual(res[0].carrera_id, "ING_MECATRONICA")
         self.assertEqual(res[0].nombre_carrera, "Ingeniería Mecatrónica")
+
+
+class TestMecatronicaVsVecinas(unittest.TestCase):
+    """Mecatrónica se parece a Electrónica y Mecánica; estas pruebas cuidan que
+    cada perfil reciba su carrera aunque compartan materias y pasatiempos."""
+
+    PLANTA = "Planta industrial y talleres especializados"
+
+    def top(self, **extra):
+        return calcular_match(perfil(entorno_laboral=self.PLANTA, **extra))[0].carrera_id
+
+    def situaciones(self, carrera_id):
+        return {q: carrera_id for q in PREGUNTAS_SITUACION}
+
+    def test_mecatronico_sin_texto_libre_obtiene_mecatronica(self):
+        self.assertEqual(self.top(
+            materias_favoritas=["Física", "Programación", "Matemáticas"],
+            pasatiempos=["Armar circuitos", "Programar"],
+            habilidad_logica=85, habilidad_diseno=65, habilidad_liderazgo=45, habilidad_manual=80,
+            situaciones=self.situaciones("ING_MECATRONICA")), "ING_MECATRONICA")
+
+    def test_electronico_sigue_obteniendo_electronica(self):
+        self.assertEqual(self.top(
+            materias_favoritas=["Física", "Matemáticas"],
+            pasatiempos=["Armar circuitos", "Reparar aparatos"],
+            habilidad_logica=85, habilidad_diseno=55, habilidad_liderazgo=40, habilidad_manual=75,
+            situaciones=self.situaciones("ING_ELECTRONICA")), "ING_ELECTRONICA")
+
+    def test_mecanico_sigue_obteniendo_mecanica(self):
+        self.assertEqual(self.top(
+            materias_favoritas=["Física", "Dibujo Técnico", "Matemáticas"],
+            pasatiempos=["Diseñar piezas", "Reparar aparatos"],
+            habilidad_logica=75, habilidad_diseno=72, habilidad_liderazgo=45, habilidad_manual=90,
+            situaciones=self.situaciones("ING_MECANICA")), "ING_MECANICA")
+
+    def test_pasatiempo_robots_solo_suma_a_mecatronica(self):
+        con_pasatiempo = [cid for cid, c in CARRERAS.items()
+                          if "Construir robots o drones" in c["pasatiempos"]]
+        self.assertEqual(con_pasatiempo, ["ING_MECATRONICA"])
+
+    def test_cada_situacion_suma_8_puntos(self):
+        base = dict(pasatiempos=["Cuidar el ambiente"], entorno_laboral="Mi propia empresa")
+        sin = {r.carrera_id: r.porcentaje_match for r in calcular_match(perfil(**base))}
+        con = {r.carrera_id: r.porcentaje_match for r in calcular_match(perfil(
+            situaciones={"robot": "ING_ENERGIAS"}, **base))}
+        self.assertAlmostEqual(con["ING_ENERGIAS"] - sin["ING_ENERGIAS"], 8.0, places=1)
+
+    def test_situaciones_es_opcional(self):
+        self.assertEqual(perfil().situaciones, {})
+
+
+class TestKeywords(unittest.TestCase):
+    def test_palabras_completas_no_pedazos(self):
+        # "ia" (Informática) no debe contar dentro de "me gustaría"; "cad" no dentro de "cada"
+        self.assertEqual(_contar_keywords(_normalizar("Me gustaría hacer algo cada día"), ["ia", "cad"]), 0)
+        self.assertEqual(_contar_keywords(_normalizar("Quiero aprender IA y CAD"), ["ia", "cad"]), 2)
+
+    def test_plural_y_acentos(self):
+        self.assertEqual(_contar_keywords(_normalizar("Me gustan los robots y la Robótica"),
+                                          ["robot", "robotica"]), 2)
+
+    def test_robotica_suma_a_mecatronica_no_a_electronica(self):
+        self.assertIn("robotica", CARRERAS["ING_MECATRONICA"]["keywords"])
+        self.assertNotIn("robotica", CARRERAS["ING_ELECTRONICA"]["keywords"])
 
 
 if __name__ == "__main__":

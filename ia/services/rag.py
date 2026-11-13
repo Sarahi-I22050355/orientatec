@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 import requests
@@ -132,6 +133,21 @@ Servicios: CAISS, Hospital Sainte Marie, Sistemas Evolución, COEL del Norte.
 Educativo: CBTis 36, CETis 46, COBAC, Universidad de Monterrey, UANE, U. de Nuevo México.
 Público: CFE, IMSS, ISSSTE, Presidencia Municipal de Monclova y Frontera, SEP Coahuila.
 
+=== MAESTROS Y DOCENTES ===
+No tienes información sobre maestros en particular: ni nombres, ni materias que imparte cada uno,
+ni calificaciones u opiniones de alumnos. Aun así, las preguntas sobre maestros SÍ son parte de tu
+tema (son preguntas sobre el campus), así que respóndelas con amabilidad, nunca con el mensaje de
+"solo puedo ayudarte con...".
+- Si preguntan cuál es el mejor maestro, quién da mejor una materia o piden opinar de alguien:
+  explica con calidez que no puedes recomendar ni comparar maestros, porque no tienes esa información
+  y porque "el mejor maestro" depende de cómo aprende cada quien.
+- Da algo útil a cambio: sugiere conocer a los maestros en una visita al campus o en las actividades
+  de inducción, preguntar a estudiantes actuales de la carrera que le interesa, y consultar la
+  información oficial en https://tecmonclova.com/web/ o llamar al 866 649 0370.
+- Puedes aprovechar para preguntarle qué carrera o materia le interesa y cómo le gusta aprender
+  (práctica, laboratorio, teoría), y relacionarlo con las carreras y laboratorios de este documento.
+- NUNCA inventes nombres de maestros, ni digas que alguno es bueno o malo, ni repitas rumores.
+
 === INSTRUCCIONES DE COMPORTAMIENTO ===
 1. Pregunta sobre hobbies, deportes y actividades favoritas para conocer mejor al estudiante.
 2. Si el estudiante menciona dificultades económicas, preséntale las opciones de becas reales.
@@ -151,6 +167,11 @@ Público: CFE, IMSS, ISSSTE, Presidencia Municipal de Monclova y Frontera, SEP C
 16. Nunca escribas listas largas ni párrafos extensos. Si tienes mucho que decir, prioriza lo más relevante y haz una pregunta al final para continuar la conversación naturalmente.
 17. Cuando alguien pregunte dónde está el campus, su ubicación o cómo llegar, responde con: "El TecNM Campus Monclova está en Carretera 57 km 4.5, Unidad Tecnológica y Universidad, Monclova, Coahuila. 📍 Aquí te dejo cómo llegar: https://maps.app.goo.gl/iP2XdrRj1s7zfYTf7 — También puedes llamarnos al 866 649 0370." (si te escribe en inglés, usa: "TecNM Campus Monclova is located at Carretera 57 km 4.5, Unidad Tecnológica y Universidad, Monclova, Coahuila. 📍 Here is how to get there: https://maps.app.goo.gl/iP2XdrRj1s7zfYTf7 — You can also call us at 866 649 0370.")
 18. Las respuestas textuales de arriba y la información de este documento están escritas en español, pero eso NO significa que debas responder en español: si el estudiante escribe en inglés, tradúcelas al inglés.
+19. Si te preguntan algo del TecNM Campus Monclova que NO está en este documento (por ejemplo horarios,
+    fechas de inscripción, costos exactos, nombres de maestros o trámites), NO lo inventes y NO
+    respondas con el mensaje de "solo puedo ayudarte con...": di con amabilidad que no tienes ese dato
+    a la mano, sugiere consultarlo en https://tecmonclova.com/web/ o al 866 649 0370, y ofrece ayudarle
+    con algo relacionado que sí sepas.
 """
 
 # ─── IDIOMA DE LA RESPUESTA ──────────────────────────────────────────────────
@@ -177,6 +198,28 @@ _PALABRAS_EN = {
 }
 
 NOMBRE_IDIOMA = {"es": "español", "en": "inglés (English)"}
+
+log = logging.getLogger(__name__)
+
+# ─── RESPUESTA DE RESPALDO ───────────────────────────────────────────────────
+# Si Gemini no contesta (se cayó la conexión, tardó demasiado, se acabó la
+# cuota o devolvió una respuesta vacía/bloqueada), antes el servicio lanzaba un
+# error y el estudiante veía "Hubo un error, intenta de nuevo". Ahora se
+# contesta con un mensaje amable que le da a dónde acudir.
+RESPUESTA_RESPALDO = {
+    "es": (
+        "¡Uy! En este momento no pude encontrar una buena respuesta para eso 😅. "
+        "Puedes intentarlo de nuevo en un momento, o consultar la información oficial en "
+        "https://tecmonclova.com/web/ o llamar al 866 649 0370. "
+        "Mientras, ¿te cuento sobre nuestras carreras, becas o el campus?"
+    ),
+    "en": (
+        "Oops! I couldn't find a good answer for that right now 😅. "
+        "You can try again in a moment, or check the official information at "
+        "https://tecmonclova.com/web/ or call 866 649 0370. "
+        "In the meantime, would you like to hear about our degrees, scholarships or the campus?"
+    ),
+}
 
 
 def detectar_idioma(texto: str, idioma_sitio: str = "es") -> str:
@@ -221,16 +264,23 @@ def chat_con_orientatec(mensaje: str, historial: list[dict], idioma: str = "es")
         "contents": contents
     }
 
-    response = requests.post(
-        GEMINI_URL,
-        json=payload,
-        headers={"x-goog-api-key": GEMINI_API_KEY or ""},
-        timeout=GEMINI_TIMEOUT,
-    )
-    response.raise_for_status()
+    try:
+        response = requests.post(
+            GEMINI_URL,
+            json=payload,
+            headers={"x-goog-api-key": GEMINI_API_KEY or ""},
+            timeout=GEMINI_TIMEOUT,
+        )
+        response.raise_for_status()
+        data = response.json()
+        # Si Gemini bloquea o no genera texto, "candidates" o "parts" vienen vacíos.
+        texto = data["candidates"][0]["content"]["parts"][0]["text"].strip()
+        if not texto:
+            raise ValueError("Gemini devolvió una respuesta vacía")
+    except (requests.RequestException, KeyError, IndexError, TypeError, ValueError) as err:
+        log.warning("Gemini no respondió, se usa la respuesta de respaldo: %s", err)
+        return {"respuesta": RESPUESTA_RESPALDO[idioma_respuesta], "perfil_detectado": None}
 
-    data = response.json()
-    texto = data["candidates"][0]["content"]["parts"][0]["text"]
     perfil = detectar_inclinacion(mensaje + " " + texto)
 
     return {
